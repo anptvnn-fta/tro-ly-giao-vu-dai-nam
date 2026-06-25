@@ -267,8 +267,8 @@ Vai trò được đọc từ `session.state["vai_tro"]` và kiểm tra trong `b
 ## Liên hệ & đóng góp
 
 - **Chủ dự án:** Phạm Thế An — anpt@dainam.edu.vn
-- **Tổ chức:** Đại học Đại Nam, Hà Nội, Việt Nam
+- **Tổ chức:** Trường Đại học Đại Nam, Hà Nội, Việt Nam
 - **Kaggle notebook:** [link sau khi nộp]
-- **GitHub:** [link repository công khai]
+- **GitHub:** https://github.com/anptvnn-fta/tro-ly-giao-vu-dai-nam
 - **Demo video:** [link YouTube sau khi nộp]
 - **Cloud Run URL:** [link sau khi deploy]

@@ -1,0 +1,21 @@
+{
+  "traces": "artifacts/traces\\traces_20260625_214949.json",
+  "so_ca": 20,
+  "metrics": {
+    "co_trich_dan": {
+      "diem": 0.636,
+      "so_ca": 11,
+      "dat": 7
+    },
+    "tu_choi_dung": {
+      "diem": 0.8,
+      "so_ca": 5,
+      "dat": 4
+    },
+    "thuc_thi_phan_quyen": {
+      "diem": 0.0,
+      "so_ca": 1,
+      "dat": 0
+    }
+  }
+}

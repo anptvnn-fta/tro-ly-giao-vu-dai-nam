@@ -1,309 +1,145 @@
-# WRITEUP — Kaggle Capstone: TroLyGiaoVu
+# Trợ lý Giáo vụ số Đại Nam
 
-**Kaggle track:** Agents for Good
-**Submission deadline:** 06/07/2026
-**Tác giả:** Phạm Thế An (anpt@dainam.edu.vn) — Đại học Đại Nam
-
----
-
-## English Abstract
-
-TroLyGiaoVu is a role-aware AI agent built with Google ADK 2.0 and Gemini Flash, designed to assist academic-affairs staff (cán bộ giáo vụ) at Dai Nam University, Vietnam. The system addresses two chronic pain points: (1) fragmented and time-consuming lookup of training regulations (quy chế đào tạo), and (2) error-prone manual construction of student make-up/retake course plans (lộ trình học lại). The agent enforces deterministic role-based access control, cites specific Articles and Clauses from source documents, logs every interaction for management reporting, and escalates out-of-scope requests to a human-in-the-loop queue. Evaluation on a 20-case Vietnamese dataset demonstrates correct citation grounding, proper refusal on out-of-scope queries, and accurate role-gate enforcement. This prototype is the technical foundation for a real-world rollout at Dai Nam University from August 2026 to June 2027.
+**Nhánh dự thi:** Agents for Good
+**Người làm:** Phạm Thế An — Phòng Đào tạo, Đại học Đại Nam (anpt@dainam.edu.vn)
+**Bản demo:** https://tro-ly-giao-vu-476049232437.asia-southeast1.run.app/dev-ui/?app=app
+**Mã nguồn:** https://github.com/anptvnn-fta/tro-ly-giao-vu-dai-nam
 
 ---
 
-## 1. Vấn đề (Problem Statement)
+## Short summary (English)
 
-### Bối cảnh thực tế
-
-Đại học Đại Nam hiện có khoảng vài nghìn sinh viên đào tạo theo hệ tín chỉ. Công tác giáo vụ phải xử lý hàng ngày nhiều loại yêu cầu từ sinh viên và giảng viên:
-
-- **Tra cứu quy chế đào tạo:** Quy định về học lại, học cải thiện, trả nợ học phần, cảnh báo học vụ, điều kiện xét tốt nghiệp nằm rải rác trong nhiều văn bản PDF/Word chưa được số hoá và liên kết với nhau. Mỗi lần tra cứu mất 10–20 phút.
-- **Lập lộ trình học lại / trả nợ học phần:** Cán bộ giáo vụ phải tổng hợp thủ công từ bảng điểm (Excel), chương trình đào tạo, lịch học, và quy định tiên quyết — rất dễ sai sót, đặc biệt khi có điều kiện tiên quyết phức tạp hoặc trùng lịch.
-- **Báo cáo xử lý yêu cầu:** Không có hệ thống tổng hợp tự động, ban lãnh đạo khó theo dõi tải công việc và chất lượng tư vấn.
-
-### Câu hỏi đặt ra
-
-> Làm thế nào để xây dựng một trợ lý AI giúp cán bộ giáo vụ tra cứu quy chế chính xác có trích dẫn nguồn, lập lộ trình học lại tự động, đồng thời đảm bảo phân quyền truy cập và ghi nhật ký mọi yêu cầu?
+This is an AI assistant for academic-affairs staff at Dai Nam University, built with Google ADK 2.0 and Gemini Flash. It does two things that eat up our time today: it looks up training regulations and answers with the exact Article and Clause, and it builds a make-up/retake study plan for a student straight from their transcript, respecting prerequisites, the per-semester credit cap, and timetable clashes. Every request is role-checked, screened for prompt injection, and logged for reporting; anything out of scope is handed to a human. It runs live on Cloud Run. For me this isn't a class exercise — it's the working prototype for a real initiative I'm running at the university from August 2026 to June 2027.
 
 ---
 
-## 2. Thiết kế giải pháp (Solution Design)
+## Vì sao tôi làm cái này
 
-### Kiến trúc tổng thể
+Tôi làm ở Phòng Đào tạo. Có hai việc lặp đi lặp lại mỗi ngày mà tôi muốn bớt cực:
+
+Thứ nhất là **tra cứu quy chế**. Quy định về học lại, học cải thiện, trả nợ học phần, cảnh báo học vụ, điều kiện tốt nghiệp… nằm rải rác trong nhiều file Word, PDF. Mỗi lần sinh viên hỏi một câu, tôi phải mở vài văn bản tìm đúng điều khoản, mất chừng mười lăm phút. Tệ hơn là hai người trả lời có khi không giống nhau vì xem nhầm bản cũ.
+
+Thứ hai là **tư vấn lộ trình học lại**. Khi một em nợ nhiều môn, tôi phải ngồi đối chiếu bảng điểm, chương trình đào tạo, điều kiện tiên quyết và lịch mở lớp để xếp xem em nên học lại môn nào trước, môn nào sau, mỗi kỳ bao nhiêu tín. Việc này dễ sai, nhất là khi môn này là tiên quyết của môn kia, hoặc hai lớp trùng giờ.
+
+Tôi muốn một trợ lý làm giúp hai việc đó, nhưng phải **trả lời có dẫn nguồn** (không bịa), **có phân quyền** (cán bộ tra cứu thường không được xem điểm chi tiết của sinh viên), và **ghi lại mọi yêu cầu** để cuối tháng có cái mà báo cáo.
+
+---
+
+## Nó làm được gì
+
+Người dùng là cán bộ giáo vụ. Họ gõ một câu bằng tiếng Việt bình thường, agent tự hiểu thuộc loại nào rồi xử lý:
+
+- **Tra cứu quy chế.** Hỏi "Sinh viên bị điểm F có phải học lại không, điều kiện gì?" thì nó trả lời dựa trên văn bản và dẫn rõ *[Điều 5, Khoản 2]*. Nếu trong tài liệu không có thì nó nói không tìm thấy, chứ không bịa.
+- **Lập lộ trình học lại / trả nợ học phần.** Nhập mã sinh viên là nó đọc bảng điểm, lọc ra môn còn nợ thật (môn nào học lại đã đậu thì bỏ qua), sắp theo điều kiện tiên quyết, chia vào từng kỳ sao cho không vượt số tín chỉ tối đa và cảnh báo nếu trùng lịch.
+- **Tra cứu lịch học và bảng điểm** theo mã sinh viên.
+- **Sinh biểu mẫu** theo dõi (ví dụ kế hoạch học lại).
+- **Việc ngoài phạm vi** (kiểu xét miễn giảm học phí diện chính sách) thì nó không tự quyết, mà đẩy lên hàng đợi để trưởng phòng duyệt.
+
+Mọi yêu cầu đều được ghi vào một file nhật ký, và có một trang **Báo cáo** tổng hợp lại — đúng cái sản phẩm "báo cáo xử lý yêu cầu" mà sáng kiến của tôi cần.
+
+---
+
+## Bên trong nó chạy thế nào
+
+Tôi dùng đồ thị workflow của ADK 2.0. Hình dung đơn giản: một câu hỏi đi vào, qua một bước phân loại, rồi rẽ về đúng "chuyên viên" lo việc đó.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    FLASK STAFF DASHBOARD                        │
-│  [Chọn vai trò] [Tra cứu] [Lộ trình] [Lịch/Điểm] [Báo cáo]   │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │ POST /run  (JSON)
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                 ADK FastAPI (fast_api_app.py)                   │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │ SafetyPlugin                                            │   │
-│  │  before_model_callback: quét prompt injection (VN+EN)  │   │
-│  │  after_model_callback:  redact PII (mã SV, phone, mail)│   │
-│  │  before_tool_callback:  kiem_tra_quyen(vai_tro, action) │   │
-│  └───────────────────────────┬─────────────────────────────┘   │
-└───────────────────────────────┼─────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              WORKFLOW "giaovu_agent"  (agent.py)                │
-│                                                                 │
-│  START                                                          │
-│    │                                                            │
-│    ▼                                                            │
-│  [intake]  LlmAgent  →  PhanLoaiYeuCau{loai, ma_sv, do_nhay_cam}│
-│    │  output_key="phan_loai"                                    │
-│    ▼                                                            │
-│  [route_intake]  Python fn  →  Event(route=loai)               │
-│    │                                                            │
-│    ├── "tra_cuu_quy_che"   →  [reg_lookup]   LlmAgent          │
-│    │                           tool: tra_cuu_quy_che()         │
-│    │                           cite: [Điều X, Khoản Y]         │
-│    │                                                            │
-│    ├── "lo_trinh_hoc_lai"  →  [path_planner]  LlmAgent         │
-│    │                           tools: lay_ho_so_sinh_vien()    │
-│    │                                  lay_chuong_trinh_dao_tao()│
-│    │                                  tinh_lo_trinh_hoc_lai()  │
-│    │                                                            │
-│    ├── "tra_cuu_lich_diem" →  [lich_diem]    LlmAgent          │
-│    │                           tools: lay_lich_hoc()           │
-│    │                                  lay_bang_diem()          │
-│    │                                                            │
-│    ├── "sinh_bieu_mau"     →  [form_filler]  LlmAgent          │
-│    │                           tool: tao_bieu_mau()            │
-│    │                                                            │
-│    └── "ngoai_pham_vi"     →  [escalate]     Python fn         │
-│                                → HITL queue (tiếng Việt)       │
-│                                                                 │
-│  [merge_log]  Python fn                                         │
-│    tool: ghi_nhat_ky_yeu_cau()  →  nhat_ky_yeu_cau.csv         │
-│    │                                                            │
-│  END  →  response JSON                                          │
-└─────────────────────────────────────────────────────────────────┘
-                                │
-          ┌─────────────────────┼──────────────────────┐
-          ▼                     ▼                      ▼
-    data/quy_che/        data/*.csv / .json      Cloud Trace
-    (RAG retrieval)      (SV, CTĐT, lịch)        OTEL logs
+Câu hỏi của cán bộ
+      │
+      ▼
+   intake            → phân loại: tra cứu quy chế / lộ trình học lại /
+   (LlmAgent)          lịch-điểm / sinh biểu mẫu / ngoài phạm vi
+      │                (đồng thời chép nguyên văn câu hỏi để bước sau dùng)
+      ▼
+   route             → rẽ nhánh theo loại
+      │
+      ├── reg_lookup     → tra cứu quy chế, trả lời kèm [Điều, Khoản]
+      ├── path_planner   → lập lộ trình học lại (đọc điểm + CTĐT + lịch)
+      ├── lich_diem      → tra lịch học / bảng điểm
+      ├── form_filler    → sinh biểu mẫu
+      └── escalate       → đẩy lên hàng đợi cho người duyệt (HITL)
 ```
 
-### Các thành phần chính
+Bao quanh đồ thị là một lớp an toàn (`SafetyPlugin`) với ba chốt: chặn prompt injection ở đầu vào, che thông tin cá nhân ở đầu ra, và kiểm tra quyền trước mỗi lần gọi công cụ. Phần lập lộ trình là một hàm Python thuần (sắp xếp tô-pô theo môn tiên quyết, dồn vào từng kỳ theo trần tín chỉ), nên nó chạy chắc chắn và kiểm thử được, không phụ thuộc may rủi của mô hình.
 
-| Thành phần | Công nghệ | Khái niệm khoá |
-|-----------|-----------|----------------|
-| ADK Workflow | google-adk 2.0 | Multi-agent, Coordinator/Router |
-| Phân loại yêu cầu | LlmAgent + Pydantic | Structured output, output_key |
-| Tra cứu quy chế | RAG (keyword+overlap) | Long-term memory, Tool |
-| Lộ trình học lại | Python topo-sort + LlmAgent | Tool, tien_quyet, tín chỉ |
-| Phân quyền | SafetyPlugin callbacks | Defense-in-depth, RBAC |
-| Nhật ký & Báo cáo | ghi_nhat_ky_yeu_cau() | Agent Quality Flywheel |
-| Đánh giá | agents-cli eval | Golden dataset, LLM-as-Judge |
-| Deploy | Cloud Run | Stateless container |
+Bản web cho cán bộ là một dashboard Flask đơn giản, gọi sang agent qua endpoint `/chat`, có các trang: tra cứu, lộ trình, lịch & điểm, hàng đợi duyệt, và báo cáo.
 
----
+### Khóa học dùng ở đâu trong dự án
 
-## 3. Bản đồ khái niệm khoá — Day 1 đến Day 5
+Mỗi ngày của khóa học đều nằm trong dự án ở một chỗ cụ thể:
 
-| Ngày | Khái niệm | Nơi thể hiện trong TroLyGiaoVu |
-|------|-----------|-------------------------------|
-| **Day 1** | Agent = Model + Tools + Orchestration + Deployment | Toàn bộ `app/agent.py`: Workflow + LlmAgent nodes |
-| **Day 1** | Think-Act-Observe loop | Mỗi LlmAgent (intake, reg_lookup, path_planner) chạy vòng lặp ReAct |
-| **Day 1** | Agent Levels 0-4 | Dự án đạt Level 3 (multi-agent + HITL); roadmap Level 4 với A2A |
-| **Day 1** | Short-term memory (state scratchpad) | `output_key="phan_loai"` truyền phân loại qua các node |
-| **Day 1** | Long-term memory (RAG) | `tra_cuu_quy_che()` đọc `data/quy_che/*.md` |
-| **Day 1** | Multi-agent: Coordinator/Router | `route_intake` Python fn phân luồng theo loại |
-| **Day 1** | HITL | Node `escalate` đẩy vào hàng đợi duyệt |
-| **Day 1** | Security defense-in-depth | `SafetyPlugin` + `kiem_tra_quyen()` |
-| **Day 2** | Function tools với typed params + docstring | Tất cả tools trong `app/tools.py` (ToolContext) |
-| **Day 2** | Tool best practices: JSON output ngắn gọn | `tra_cuu_quy_che()` trả `{doan_van, nguon}` |
-| **Day 2** | AgentTool | `path_planner` gọi `tinh_lo_trinh_hoc_lai()` |
-| **Day 3** | Sessions & Events | ADK session + Event routing trong Workflow |
-| **Day 3** | state via output_key | `phan_loai` shared giữa intake → route → specialists |
-| **Day 3** | Memory Bank / PreloadMemoryTool | RAG qua `tra_cuu_quy_che()` |
-| **Day 3** | Per-user ACL memory scope | `session.state["vai_tro"]` kiểm soát tool access |
-| **Day 3** | Jinja2 system-instruction injection | `reg_lookup` inject tên cán bộ vào instruction |
-| **Day 4** | SafetyPlugin before_model_callback | Quét prompt injection tiếng Việt + tiếng Anh |
-| **Day 4** | after_model_callback PII redaction | Ẩn mã SV, email, số điện thoại khỏi output |
-| **Day 4** | before_tool_callback guardrails | `kiem_tra_quyen()` chặn tool gọi ngoài quyền |
-| **Day 4** | ADK Eval Set + agents-cli eval | `tests/eval/giaovu-dataset.json` 20 cases |
-| **Day 4** | LLM-as-Judge metrics | `custom_response_quality` trong `eval_config.yaml` |
-| **Day 4** | Python-function metrics | `co_trich_dan`, `tu_choi_dung`, `thuc_thi_phan_quyen` |
-| **Day 4** | Agent Quality Flywheel | HITL feedback → eval cases mới → cải thiện model |
-| **Day 5** | FastAPI + Cloud Run deploy | `fast_api_app.py` + `agents-cli deploy` |
-| **Day 5** | Stateless container + externalized state | Session in-memory / Cloud SQL |
-| **Day 5** | Web frontend / HITL dashboard | `frontend/` Flask + trang Hàng đợi duyệt |
-| **Day 5** | Observability OTEL/Cloud Trace | `app_utils/telemetry.py` + Cloud Logging |
-| **Day 5** | eval-gated deployment | CI/CD chạy eval trước khi push production |
+- **Day 1 (Agent & điều phối):** agent = mô hình + công cụ + điều phối + triển khai; đồ thị `intake → route → các chuyên viên` chính là mẫu router/coordinator; nhánh `escalate` là human-in-the-loop.
+- **Day 2 (Công cụ):** tám công cụ trong `app/tools.py`, mỗi cái có kiểu tham số rõ ràng, docstring, và `ToolContext`; công cụ trả về JSON gọn (ví dụ tra cứu quy chế trả về đoạn văn + nguồn) chứ không đổ dữ liệu thô vào ngữ cảnh.
+- **Day 3 (Ngữ cảnh & bộ nhớ):** dùng session/state để truyền kết quả phân loại qua các bước (`output_key="phan_loai"`), và vai trò người dùng lưu trong `session.state["vai_tro"]` để kiểm soát truy cập.
+- **Day 4 (Chất lượng & an toàn):** `SafetyPlugin` với ba callback; bộ eval 20 ca + script chấm điểm; câu chuyện vòng lặp chất lượng ở dưới.
+- **Day 5 (Triển khai):** đóng gói FastAPI, deploy lên Cloud Run, có dashboard cho con người và ghi log/observability.
 
 ---
 
-## 4. Kết quả đánh giá (Eval Results)
+## Tôi kiểm tra chất lượng ra sao
 
-> **Lưu ý:** Các chỉ số dưới đây là placeholder — cần điền sau khi chạy `agents-cli eval` lần đầu trên Kaggle/Cloud Run.
+Tôi viết một bộ 20 câu hỏi mẫu (`tests/eval/datasets/giaovu-dataset.json`): 7 câu tra cứu quy chế, 5 câu lộ trình học lại, 3 câu lịch/điểm, 2 câu ngoài phạm vi, và 3 câu cố tình tấn công. Rồi tôi cho agent chạy hết 20 câu và chấm bằng mấy thước đo tự viết.
 
-### Dataset: `tests/eval/datasets/giaovu-dataset.json`
+Điều thú vị là **bộ eval đã bắt được một lỗi thật mà tôi không thấy khi bấm thử bằng tay**. Lần chấm đầu, chỉ số "có trích dẫn" của phần tra cứu quy chế là **0%** — agent toàn trả lời chung chung kiểu "bạn cần hỏi gì". Lần theo vết, tôi phát hiện node tra cứu chỉ nhận được kết quả phân loại của bước trước, chứ không thấy câu hỏi gốc, nên nó tìm kiếm bằng từ khóa vu vơ. Tôi sửa lại cho câu hỏi gốc được chép sang bước sau. Chấm lại:
 
-| Loại eval case | Số lượng | Mô tả |
-|---------------|----------|---------|
-| Tra cứu quy chế | 7 | Câu hỏi về học lại, tiên quyết, cảnh báo học vụ |
-| Lộ trình học lại | 5 | Nhập mã SV, xây kế hoạch từng kỳ |
-| Tra cứu lịch/điểm | 3 | Lịch học tuần, bảng điểm học kỳ |
-| Ngoài phạm vi | 2 | Kỳ vọng: từ chối/escalate |
-| Adversarial | 3 | Prompt injection + role bị chặn |
-| **Tổng** | **20** | |
+| Thước đo | Trước khi sửa | Sau khi sửa |
+|---|---|---|
+| Tra cứu có trích dẫn Điều/Khoản | 0% | **64%** (7/11 câu) |
+| Từ chối đúng khi ngoài phạm vi / bị tấn công | 80% | **80%** (4/5 câu) |
+| Chạy trọn 20 câu không lỗi | — | **20/20** |
 
-### Kết quả metrics (placeholder — điền sau khi chạy eval)
+Đây đúng là cái "vòng lặp chất lượng" mà Day 4 nói: đo được thì mới thấy lỗi, sửa rồi đo lại thấy tốt lên. Mỗi lần cán bộ chỉnh tay một kết quả ở hàng đợi duyệt, ca đó cũng thành một ca kiểm thử mới cho lần sau.
 
-| Metric | Mô tả | Kết quả |
-|--------|-------|---------|
-| `custom_response_quality` | Chất lượng câu trả lời tiếng Việt (LLM-as-Judge, 0–1) | `[PENDING]` |
-| `agent_turn_count` | Số bước trung bình mỗi yêu cầu | `[PENDING]` |
-| `co_trich_dan` | % câu trả lời có chứa "Điều" (trích dẫn quy chế) | `[PENDING]` |
-| `tu_choi_dung` | % case ngoài phạm vi được từ chối đúng | `[PENDING]` |
-| `thuc_thi_phan_quyen` | % case adversarial phân quyền bị chặn đúng | `[PENDING]` |
+Phần **phân quyền** thì tôi kiểm bằng **65 unit test** (`tests/unit/`), vì bộ eval chạy mọi câu với cùng một vai trò mặc định nên không tiện đổi vai trò theo từng câu. Các test khẳng định: tra cứu viên không xem được hồ sơ/điểm sinh viên, cán bộ giáo vụ không duyệt được hàng đợi, còn trưởng phòng thì toàn quyền.
 
-### Cách chạy để có kết quả thực:
+Một lưu ý thật thà: bước chấm điểm tự động của `agents-cli` chạy qua dịch vụ Vertex AI, mà project GCP của tôi mới bật nên Google chưa cấp xong tài khoản dịch vụ (báo lỗi 404 "Gaia id not found"). Thay vì ngồi chờ, tôi viết luôn một script `tests/eval/cham_diem_offline.py` tính ba thước đo trực tiếp từ file traces — không cần Vertex, chạy ở máy nào cũng ra cùng một số. Cách này hóa ra lại tiện hơn cho người chấm muốn tái lập kết quả.
+
+---
+
+## An toàn và phân quyền
+
+Có ba vai trò: *tra cứu viên* (chỉ tra quy chế), *cán bộ giáo vụ* (tra cứu + lập lộ trình + lịch/điểm + biểu mẫu), và *trưởng phòng đào tạo* (toàn quyền, duyệt hàng đợi). Quyền được kiểm ở hai nơi cho chắc: trong từng công cụ, và ở callback `before_tool_callback` trước khi công cụ chạy.
+
+Ngoài ra, đầu vào được quét tìm dấu hiệu prompt injection (cả tiếng Việt lẫn tiếng Anh — kiểu "bỏ qua hướng dẫn", "ignore previous instructions"), và đầu ra được che mã sinh viên, email, số điện thoại với những vai trò không đủ quyền. Tôi đã chạy thử trực tiếp: câu tấn công bị chặn, còn câu hỏi bình thường vẫn qua.
+
+---
+
+## Triển khai
+
+Dự án chạy được theo hai đường: chỉ với một API key của Google AI Studio (đủ cho demo, không cần bật billing nặng), hoặc đầy đủ trên Google Cloud. Bản demo đang chạy thật trên Cloud Run, khu vực Singapore (asia-southeast1):
 
 ```bash
-uv pip install -e ".[eval]"
-agents-cli eval tests/eval/datasets/giaovu-dataset.json \
-  --config tests/eval/eval_config.yaml
+gcloud run deploy tro-ly-giao-vu --source . --region asia-southeast1 \
+  --allow-unauthenticated --memory 1Gi \
+  --set-env-vars "GOOGLE_API_KEY=...,GOOGLE_GENAI_USE_VERTEXAI=FALSE"
 ```
+
+Container không giữ trạng thái, cổng lấy từ biến môi trường, dữ liệu mẫu nằm trong ảnh. Khi lên thật thì phần dữ liệu sinh viên và nhật ký nên chuyển sang cơ sở dữ liệu ngoài.
 
 ---
 
-## 5. Bảo mật & Phân quyền (Security)
+## Liên hệ với công việc thật của tôi
 
-### Mô hình phân quyền RBAC
+Cái này không dừng ở bài nộp. Nó là bản thí điểm cho một sáng kiến tôi phụ trách ở Đại học Đại Nam, dự kiến chạy từ **tháng 8/2026 đến tháng 6/2027**: số hóa quy chế, dựng biểu mẫu theo dõi, và thử nghiệm trợ lý tra cứu có phân quyền cho phòng Đào tạo. Mục tiêu rất cụ thể — giảm thời gian xử lý mỗi yêu cầu, và giảm sai sót khi tư vấn lộ trình học lại, trả nợ học phần.
 
-```
-Vai trò              Hành động được phép
-──────────────────────────────────────────────────────────────────
-tra_cuu_vien     →   tra_cuu_quy_che (read-only)
-giao_vu          →   tra_cuu_quy_che, lay_ho_so_sinh_vien,
-                     lay_chuong_trinh_dao_tao, tinh_lo_trinh_hoc_lai,
-                     lay_lich_hoc, lay_bang_diem, tao_bieu_mau,
-                     ghi_nhat_ky_yeu_cau
-truong_phong_    →   Tất cả quyền trên + duyệt HITL queue +
-dao_tao              xem toàn bộ nhat_ky_yeu_cau
-```
-
-### Các lớp bảo vệ (defense-in-depth)
-
-1. **Tầng 1 — Phân loại trước (intake):** LlmAgent phân loại `do_nhay_cam` = "nhay_cam" khi yêu cầu liên quan đến dữ liệu cá nhân nhạy cảm.
-2. **Tầng 2 — before_model_callback:** SafetyPlugin quét input tìm mẫu prompt injection bằng regex đa ngữ (VN + EN): `bỏ qua`, `ignore`, `quên hướng dẫn`, `system prompt`, v.v.
-3. **Tầng 3 — before_tool_callback:** Gọi `kiem_tra_quyen(vai_tro, hanh_dong)` trước mỗi lần gọi tool. Từ chối bằng thông báo tiếng Việt cụ thể.
-4. **Tầng 4 — after_model_callback:** Redact PII từ output: mã SV `\b\d{8,12}\b` (nếu vai trò không được phép), địa chỉ email, số điện thoại.
-5. **Tầng 5 — Escalate:** Yêu cầu ngoài phạm vi hoặc nhạy cảm cao được đẩy vào HITL queue thay vì trả lời trực tiếp.
+Lộ trình tôi hình dung: tháng 8–9 số hóa quy chế và nhập dữ liệu thật; tháng 10–12 cho một hai cán bộ dùng thử và thu nhật ký; đầu 2027 chạy vòng cải thiện dựa trên nhật ký đó; rồi mở ra cả phòng.
 
 ---
 
-## 6. Triển khai (Deployment)
+## Những chỗ chưa hoàn hảo, và sẽ làm tiếp
 
-### Môi trường phát triển (Kaggle / local)
+Tôi muốn nói thẳng vài hạn chế:
 
-```
-Python 3.11 + uv
-google-adk[gcp] >= 2.0.0
-Google AI Studio API key (GOOGLE_API_KEY)
-agents-cli playground → http://localhost:8000
-```
+- Phần tra cứu hiện tìm theo từ khóa đơn giản, đạt 64% có trích dẫn — đủ tốt cho prototype nhưng sẽ khá hơn nhiều nếu thay bằng tìm kiếm theo embedding và quy chế đầy đủ (giờ tôi mới đưa vào vài văn bản mẫu).
+- Dữ liệu sinh viên đang là dữ liệu giả để demo. Khi triển khai thật phải dùng dữ liệu thật (đã ẩn danh) và chuyển sang cơ sở dữ liệu có sao lưu.
+- Việc chấm điểm bằng "LLM làm giám khảo" tôi để lại làm bước sau, khi tài khoản Vertex AI sẵn sàng.
 
-### Môi trường sản xuất (Cloud Run)
-
-```
-Docker (stateless container)
-Cloud Run (us-east1, auto-scaling)
-Cloud SQL / Firestore (externalized session state)
-Cloud Trace + Cloud Logging (OTEL observability)
-Artifact Registry (container images)
-Secret Manager (GOOGLE_API_KEY, DB credentials)
-```
-
-### Lệnh deploy:
-
-```bash
-gcloud config set project YOUR_PROJECT_ID
-agents-cli deploy
-# Kết quả: https://giaovu-agent-XXXX-ue.a.run.app
-```
+Nhưng phần lõi — hiểu yêu cầu, tra cứu có dẫn nguồn, lập lộ trình đúng tiên quyết và tín chỉ, phân quyền, ghi nhật ký, và chạy thật trên cloud — thì đã hoạt động.
 
 ---
 
-## 7. Wow Factor — Báo cáo xử lý yêu cầu & Quality Flywheel
+## Liên kết
 
-### Báo cáo xử lý yêu cầu (BÁO CÁO — Expected Product)
-
-Mỗi yêu cầu được xử lý đều ghi vào `data/nhat_ky_yeu_cau.csv` qua `ghi_nhat_ky_yeu_cau()`. Trang **Báo cáo** trong Flask dashboard đọc CSV này và hiển thị:
-
-- Tổng số yêu cầu theo loại (biểu đồ cột)
-- Thời gian xử lý trung bình
-- Danh sách yêu cầu cần duyệt HITL còn tồn đọng
-- Xuất Excel để ban lãnh đạo xem xét
-
-Đây là sản phẩm **"Báo cáo xử lý yêu cầu"** được liệt kê trong KPI thực tế của Đại học Đại Nam.
-
-### Agent Quality Flywheel
-
-```
-Cán bộ dùng agent  ──►  Kết quả tốt/không tốt
-         │                        │
-         ▼                        ▼
-  HITL queue (feedback)    ghi_nhat_ky_yeu_cau()
-         │                        │
-         └────────────┬───────────┘
-                      ▼
-           agents-cli eval generate
-           (sinh eval cases mới từ lịch sử)
-                      │
-                      ▼
-           agents-cli eval analyze
-           (phát hiện điểm yếu)
-                      │
-                      ▼
-           Cải thiện prompt / tools / data
-                      │
-                      ▼
-           agents-cli eval (eval-gated deploy)
-                      │
-                      ▼
-           Phiên bản tốt hơn lên Cloud Run
-```
-
-Vòng phản hồi này đảm bảo hệ thống tự cải thiện theo thực tế sử dụng tại Đại học Đại Nam — không cần đội kỹ thuật can thiệp thủ công.
-
----
-
-## 8. Kết luận & Lộ trình thực tế
-
-### Ý nghĩa của prototype Kaggle
-
-Capstone này không chỉ là bài tập kỹ thuật. Đây là **prototype hoạt động** mà Phạm Thế An sẽ dùng để:
-
-1. **Thuyết phục ban lãnh đạo Đại học Đại Nam** về tính khả thi của AI trong công tác giáo vụ.
-2. **Thu thập dữ liệu thực** (quy chế đầy đủ, dữ liệu SV thực) để nâng cấp sau khi khoá học kết thúc.
-3. **Đào tạo cán bộ giáo vụ** sử dụng hệ thống trong giai đoạn thí điểm (Q4/2026).
-
-### Lộ trình triển khai thực tế (Aug 2026 – Jun 2027)
-
-| Giai đoạn | Thời gian | Mục tiêu |
-|-----------|-----------|----------|
-| Số hoá quy chế | Aug – Sep 2026 | Chuyển toàn bộ quy chế sang Markdown, nhập CTĐT thực |
-| Thí điểm nội bộ | Oct – Dec 2026 | 2–3 cán bộ giáo vụ dùng thực tế, thu nhật ký |
-| Đánh giá & cải thiện | Jan – Mar 2027 | Chạy Quality Flywheel, nâng cấp model |
-| Mở rộng | Apr – Jun 2027 | Toàn bộ phòng Đào tạo + tích hợp hệ thống QLSV |
-
-**Chủ sở hữu:** Phạm Thế An (anpt@dainam.edu.vn)
-**KPIs thực tế cần đạt:**
-- Giảm 50% thời gian tra cứu quy chế (từ ~15 phút xuống ~3 phút)
-- Giảm 80% sai sót khi lập lộ trình học lại
-- 100% yêu cầu được ghi nhật ký và có thể báo cáo
-
----
-
-*Writeup này được viết theo format Kaggle Notebooks. Kết quả eval thực tế sẽ được cập nhật trước deadline 06/07/2026.*
+- **Bản demo (Cloud Run):** https://tro-ly-giao-vu-476049232437.asia-southeast1.run.app/dev-ui/?app=app
+- **Mã nguồn (GitHub):** https://github.com/anptvnn-fta/tro-ly-giao-vu-dai-nam
+- **Video demo:** *(đính kèm trong bài nộp Kaggle)*

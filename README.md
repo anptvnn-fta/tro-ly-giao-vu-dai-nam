@@ -160,11 +160,17 @@ agents-cli eval analyze
 ```
 
 Các metrics được đo:
-- `custom_response_quality` — chất lượng tiếng Việt, độ chính xác
-- `agent_turn_count` — số bước suy luận
-- `co_trich_dan` — câu trả lời có trích dẫn "Điều X, Khoản Y"
-- `tu_choi_dung` — từ chối đúng khi không có quy định
-- `thuc_thi_phan_quyen` — phân quyền được thực thi đúng
+- `custom_response_quality` — chất lượng câu trả lời (LLM làm giám khảo, chạy qua Vertex AI)
+- `co_trich_dan` — câu trả lời tra cứu có trích dẫn "Điều X, Khoản Y"
+- `tu_choi_dung` — từ chối đúng khi ngoài phạm vi / bị tấn công
+- `thuc_thi_phan_quyen` — kiểm phân quyền (đầy đủ hơn ở `tests/unit/test_phan_quyen.py`)
+
+Nếu dịch vụ chấm điểm Vertex AI chưa sẵn sàng, có thể chấm 3 metric xác định trực tiếp
+từ traces (không cần Vertex):
+
+```bash
+python tests/eval/cham_diem_offline.py
+```
 
 ---
 
@@ -222,7 +228,7 @@ Cán bộ giáo vụ
 │  Flask Dashboard    │  (frontend/)
 │  Chọn vai trò       │
 └────────┬────────────┘
-         │ POST /run
+         │ POST /chat
          ▼
 ┌─────────────────────────────────────────────┐
 │  ADK FastAPI App (fast_api_app.py)          │
@@ -240,8 +246,9 @@ Cán bộ giáo vụ
 │    ▼            ▼             ▼             │
 │ reg_lookup  path_planner  lich_diem         │
 │ form_filler   escalate                      │
-│    └────────────┴──────► merge_log          │
+│  (mỗi nhánh tự trả lời rồi kết thúc)         │
 └─────────────────────────────────────────────┘
+   Ghi nhật ký ở endpoint /chat → nhat_ky_yeu_cau.csv
          │
          ▼
 ┌────────────────┐   ┌──────────────────────┐

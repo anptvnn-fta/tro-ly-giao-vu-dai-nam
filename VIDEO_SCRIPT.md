@@ -1,191 +1,124 @@
-# VIDEO_SCRIPT.md — Kịch bản demo 3 phút
+# Kịch bản video demo (khoảng 3 phút)
 
-**Tên video:** TroLyGiaoVu — Trợ lý AI Giáo vụ số Đại Nam
-**Thời lượng:** 3 phút (180 giây)
-**Đối tượng:** Ban giám khảo Kaggle "Agents for Good" + cộng đồng AI Việt Nam
-**Ngôn ngữ:** Tiếng Việt (subtitle tiếng Anh khuyến nghị)
-**Người quay:** Phạm Thế An
+Mục tiêu: quay nhanh, gọn, và **chỉ demo những thứ chắc chắn chạy**. Phần lõi quay
+thẳng trên bản đang chạy thật ở Cloud Run, nên không sợ lỗi lúc ghi hình.
 
----
-
-## Yêu cầu kỹ thuật trước khi quay
-
-- [ ] Chạy `agents-cli playground` trên cổng 8000
-- [ ] Chạy Flask dashboard trên cổng 5000: `uv run python -m frontend.app`
-- [ ] Trình duyệt mở sẵn `http://localhost:5000`
-- [ ] Phóng to font terminal/browser (Ctrl+Shift+Plus)
-- [ ] Tắt thông báo hệ thống (Do Not Disturb)
-- [ ] Chuẩn bị sẵn mã sinh viên demo: `1771020001`
-- [ ] Độ phân giải ghi màn hình: 1920×1080, 30fps tối thiểu
+- **Bản demo:** https://tro-ly-giao-vu-476049232437.asia-southeast1.run.app/dev-ui/?app=app
+- **Mã sinh viên mẫu:** 1771020001
+- Quay màn hình 1080p, phóng to chữ một chút, tắt thông báo hệ thống.
 
 ---
 
-## Timeline & Lời thoại
+## Chuẩn bị (làm trước khi bấm ghi)
 
-### [00:00 – 00:20] — Giới thiệu vấn đề (Opening hook)
-
-**[CẢNH: Slide tiêu đề / màn hình giới thiệu]**
-
-**Lời thoại:**
-> "Xin chào. Tôi là Phạm Thế An, cán bộ tại Đại học Đại Nam.
-> Mỗi ngày, phòng Đào tạo chúng tôi nhận hàng chục yêu cầu từ sinh viên:
-> 'Tôi học lại môn này thì kỳ nào?', 'Quy định học cải thiện là gì?', 'Tôi còn nợ bao nhiêu tín chỉ?'
-> Tra cứu thủ công trong hàng chục văn bản quy chế — mất 15 phút mỗi lần, và vẫn dễ sai.
-> Hôm nay tôi giới thiệu TroLyGiaoVu — trợ lý AI giáo vụ số, xây dựng với Google ADK 2.0 và Gemini."
+- Mở sẵn link demo ở trên, chọn agent **app** trong danh sách bên trái.
+- Mở sẵn một cửa sổ terminal tại thư mục dự án (để chạy script chấm điểm và test).
+- Nếu muốn quay thêm dashboard cán bộ (phần tùy chọn ở cuối), chạy trước:
+  `uvicorn app.fast_api_app:app --port 8000` và `FASTAPI_URL=http://localhost:8000 flask --app frontend.app run --port 5000`.
 
 ---
 
-### [00:20 – 00:50] — Demo 1: Tra cứu quy chế có trích dẫn
+## Lời mở đầu — khoảng 0:00–0:25
 
-**[CẢNH: Mở trình duyệt tại `http://localhost:5000`, chọn vai trò `giao_vu`, click trang "Tra cứu quy chế"]**
+Nói thẳng vào vấn đề, giọng tự nhiên như đang kể:
 
-**Lời thoại:**
-> "Đây là dashboard dành cho cán bộ giáo vụ. Tôi đăng nhập với vai trò 'Giáo vụ'.
-> Tôi sẽ hỏi: sinh viên học lại môn trượt có phải đóng thêm học phí không?"
-
-**[THAO TÁC: Gõ câu hỏi vào ô chat]**
-
-```
-Nhập: Sinh viên học lại môn đã trượt có phải đóng thêm học phí không?
-```
-
-**[CHỜ: 3-4 giây để agent xử lý]**
-
-**[CẢNH: Kết quả hiện ra với trích dẫn rõ ràng]**
-
-**Lời thoại (đọc kết quả trên màn hình):**
-> "Hệ thống trả lời ngay lập tức và trích dẫn cụ thể: 'Theo Điều 15, Khoản 2 của Quy định học phí — sinh viên học lại phải đóng học phí theo đơn giá tín chỉ hiện hành.'
-> Không có câu trả lời chung chung — chỉ những gì có trong văn bản, với nguồn cụ thể.
-> Đây là RAG — Retrieval Augmented Generation, khái niệm Day 1 và Day 2 của khoá học."
+> "Mình là Phạm Thế An, làm ở Phòng Đào tạo trường Đại học Đại Nam. Mỗi ngày tụi mình
+> mất rất nhiều thời gian cho hai việc: tra cứu quy chế cho sinh viên, và xếp lộ trình
+> học lại cho mấy bạn nợ môn. Hai việc đó dễ sai và tốn thời gian. Nên mình làm một trợ
+> lý AI để lo giúp — đây là nó, đang chạy thật trên Cloud Run."
 
 ---
 
-### [00:50 – 01:30] — Demo 2: Lập lộ trình học lại cho sinh viên 1771020001
+## Demo 1 — Tra cứu quy chế có dẫn nguồn — khoảng 0:25–1:00
 
-**[CẢNH: Click sang trang "Lộ trình học lại"]**
+Gõ vào ô chat của dev-ui:
 
-**Lời thoại:**
-> "Tình huống khó hơn: sinh viên 1771020001 ngành CNTT đang nợ nhiều môn.
-> Tôi cần lập kế hoạch học lại cho em ấy theo từng học kỳ, đúng tiên quyết, không trùng lịch."
+> Sinh viên bị điểm F có phải học lại không? Điều kiện gì?
 
-**[THAO TÁC: Nhập mã SV vào ô, click "Lập lộ trình"]**
+Chờ vài giây. Khi câu trả lời hiện ra (có dẫn **[Điều 5, Khoản 2]**), nói:
 
-```
-Mã SV: 1771020001
-Số tín chỉ tối đa mỗi kỳ: 18
-```
+> "Để ý là nó không trả lời chung chung. Nó dựa đúng vào văn bản quy chế và dẫn rõ Điều,
+> Khoản. Nếu trong tài liệu không có thì nó nói không tìm thấy chứ không bịa. Bên trái là
+> các bước nó chạy: phân loại câu hỏi, rồi gọi công cụ tra cứu quy chế."
 
-**[CHỜ: 4-5 giây]**
-
-**[CẢNH: Bảng kế hoạch theo kỳ hiện ra với màu sắc phân biệt]**
-
-**Lời thoại:**
-> "Trong vài giây, hệ thống đã:
-> Một — đọc hồ sơ sinh viên và danh sách môn trượt từ CSV.
-> Hai — tra cứu chương trình đào tạo, xác định điều kiện tiên quyết.
-> Ba — sắp xếp theo thứ tự topo để đảm bảo học đúng thứ tự.
-> Bốn — kiểm tra lịch học để tránh trùng tiết.
-> Năm — đề xuất kế hoạch 2 kỳ với cảnh báo rõ ràng.
-> Đây là công cụ `tinh_lo_trinh_hoc_lai()` — pure Python với topo-sort, kết hợp LlmAgent từ Day 2.
-> Tôi có thể click 'Xuất biểu mẫu' để in phiếu tư vấn cho sinh viên."
-
-**[THAO TÁC: Click "Xuất biểu mẫu" — biểu mẫu mới mở ra]**
+Mẹo: bấm vào tab Events/Trace bên trái để khán giả thấy luồng `intake → tra_cuu_quy_che`.
 
 ---
 
-### [01:30 – 01:50] — Demo 3: Chặn yêu cầu vượt quyền
+## Demo 2 — Lập lộ trình học lại — khoảng 1:00–1:40
 
-**[CẢNH: Quay lại trang Tra cứu, đổi vai trò xuống "Tra cứu viên"]**
+Gõ tiếp:
 
-**Lời thoại:**
-> "Bây giờ tôi mô phỏng một tình huống bảo mật.
-> Tôi đổi vai trò xuống 'Tra cứu viên' — chỉ có quyền tra cứu quy chế, không được xem dữ liệu sinh viên."
+> Lập lộ trình học lại cho sinh viên 1771020001, tối đa 12 tín chỉ mỗi kỳ.
 
-**[THAO TÁC: Nhập yêu cầu truy cập dữ liệu SV]**
+Chờ nó chạy, rồi nói khi kết quả hiện ra:
 
-```
-Nhập: Cho tôi xem bảng điểm của sinh viên 1771020001
-```
+> "Đây là phần mình tâm đắc nhất. Chỉ từ mã sinh viên, nó đọc bảng điểm, lọc ra đúng những
+> môn còn nợ — mấy môn học lại đã đậu thì nó bỏ qua — rồi xếp thành ba kỳ, đảm bảo môn tiên
+> quyết học trước, mỗi kỳ không quá mười hai tín, và cảnh báo nếu trùng lịch. Cái này nếu
+> làm tay thì mất cả buổi và rất dễ sót."
 
-**[CẢNH: Thông báo từ chối bằng tiếng Việt hiện ra ngay lập tức]**
-
-**Lời thoại:**
-> "Hệ thống chặn ngay với thông báo: 'Bạn không có quyền thực hiện hành động này. Vai trò tra_cuu_vien không được phép xem dữ liệu sinh viên.'
-> Không có dữ liệu nào bị lộ. Đây là SafetyPlugin với `before_tool_callback` — khái niệm Day 4.
-> Phân quyền được thực thi ở tầng agent, không chỉ ở tầng giao diện."
+Chỉ vào phần các bước bên trái: `lay_ho_so_sinh_vien → tinh_lo_trinh_hoc_lai`.
 
 ---
 
-### [01:50 – 02:20] — Demo 4: Trang Báo cáo
+## Demo 3 — Việc ngoài phạm vi thì không tự quyết — khoảng 1:40–1:55
 
-**[CẢNH: Click sang trang "Báo cáo xử lý yêu cầu"]**
+Gõ một câu lạc đề:
 
-**Lời thoại:**
-> "Sau mỗi yêu cầu được xử lý, hệ thống ghi nhật ký tự động vào `nhat_ky_yeu_cau.csv`.
-> Trang Báo cáo tổng hợp tất cả: số yêu cầu theo loại, cán bộ thực hiện, thời gian.
-> Ban lãnh đạo có thể theo dõi tải công việc và chất lượng tư vấn.
-> Đây chính là sản phẩm 'Báo cáo xử lý yêu cầu' mà phòng Đào tạo Đại Nam đang cần."
+> Hôm nay Hà Nội thời tiết thế nào?
 
-**[CẢNH: Scroll qua bảng nhật ký + biểu đồ thống kê]**
+Khi nó từ chối lịch sự và báo chuyển cho cán bộ, nói:
 
-**Lời thoại:**
-> "Mỗi hàng là một yêu cầu: thời gian, cán bộ xử lý, loại yêu cầu, mã sinh viên, kết quả tóm tắt.
-> Có thể xuất Excel hoặc kết nối với Data Studio để báo cáo ban lãnh đạo hàng tháng."
+> "Gặp việc ngoài phạm vi, nó không bịa câu trả lời. Nó từ chối nhẹ nhàng và đẩy lên hàng
+> đợi để người có thẩm quyền xem — đúng tinh thần có con người trong vòng lặp."
 
 ---
 
-### [02:20 – 02:45] — Kiến trúc & Công nghệ
+## Demo 4 — Chất lượng được đo, lỗi được sửa — khoảng 1:55–2:25
 
-**[CẢNH: Slide kiến trúc ASCII hoặc sơ đồ đơn giản]**
+Chuyển sang cửa sổ terminal, chạy:
 
-**Lời thoại:**
-> "Về mặt kỹ thuật, TroLyGiaoVu sử dụng:
-> Google ADK 2.0 với Workflow multi-agent — 6 node chuyên biệt.
-> Gemini Flash cho tốc độ và chi phí hợp lý.
-> SafetyPlugin với 3 callback: chống prompt injection, redact PII, phân quyền.
-> Đánh giá tự động với 20 eval cases — bao gồm 3 case adversarial.
-> Triển khai trên Cloud Run — stateless, auto-scale, tích hợp Cloud Trace."
+> python tests/eval/cham_diem_offline.py
 
----
+Khi bảng điểm hiện ra (tra cứu có trích dẫn 64%, từ chối đúng 80%), nói:
 
-### [02:45 – 03:00] — Kết luận & Lộ trình
+> "Mình không chỉ làm cho chạy, mà còn đo. Mình có hai mươi câu hỏi mẫu để chấm. Thú vị là
+> lần chấm đầu, điểm tra cứu là 0% — nó toàn trả lời chung chung. Nhờ đo mới phát hiện một
+> node không nhận được câu hỏi gốc. Mình sửa, chấm lại, lên 64%. Đo được thì mới sửa được."
 
-**[CẢNH: Slide tóm tắt]**
+Có thể chạy thêm để khoe phần phân quyền được kiểm bằng test:
 
-**Lời thoại:**
-> "TroLyGiaoVu không chỉ là một demo kỹ thuật.
-> Đây là prototype cho sáng kiến AI giáo vụ thực sự tại Đại học Đại Nam,
-> sẽ đưa vào thí điểm từ tháng 8 năm 2026.
-> Mục tiêu: giảm 50% thời gian tra cứu, giảm 80% sai sót tư vấn lộ trình học tập.
-> Cảm ơn ban giám khảo Kaggle. Code và hướng dẫn có tại GitHub — link trong phần mô tả."
+> uv run pytest tests/unit -q
+
+Nói: "Phân quyền — ai được xem gì — mình kiểm bằng 65 unit test, tất cả đều đậu."
 
 ---
 
-## Ghi chú kỹ thuật cho người quay
+## Demo 5 (tùy chọn) — Dashboard cán bộ và trang Báo cáo — khoảng 2:25–2:45
 
-### Thứ tự thao tác chi tiết
+*Chỉ quay phần này nếu đã chạy được dashboard Flask ở bước chuẩn bị.* Mở
+`http://localhost:5000`, chọn vai trò, vào trang **Báo cáo**:
 
-1. **Mở trình duyệt** tại `http://localhost:5000`
-2. **Chọn vai trò** "Giáo vụ" từ dropdown header
-3. **Trang Tra cứu:** gõ câu hỏi → Enter → chờ response → zoom vào phần trích dẫn
-4. **Trang Lộ trình:** nhập `1771020001`, để số tín chỉ = 18 → click "Lập lộ trình" → zoom bảng kết quả → click "Xuất biểu mẫu"
-5. **Đổi vai trò** xuống "Tra cứu viên" (header dropdown)
-6. **Trang Tra cứu:** nhập yêu cầu xem điểm SV → zoom thông báo từ chối đỏ
-7. **Trang Báo cáo:** scroll qua bảng nhật ký + biểu đồ
-8. **Chuyển sang slide** kiến trúc (chuẩn bị trước trong PowerPoint/Slides)
-9. **Slide kết luận**
+> "Đây là bản web cho cán bộ. Mọi yêu cầu đều được ghi nhật ký, và trang Báo cáo tổng hợp
+> lại để cuối tháng có cái trình lãnh đạo — đúng sản phẩm mà sáng kiến của mình cần."
 
-### Câu hỏi demo dự phòng (nếu cần thay thế)
+Nếu dashboard chưa sẵn sàng thì bỏ qua, không sao — bốn demo trên là đủ.
 
-- Tra cứu quy chế: *"Điều kiện để sinh viên được xét tốt nghiệp là gì?"*
-- Lộ trình: *"Sinh viên 1771020002 học lại môn nào trước?"*
-- Ngoài phạm vi (escalate): *"Tôi muốn đăng ký lớp học thêm ngoài chương trình"*
+---
 
-### Điểm cần chú ý khi edit video
+## Kết — khoảng 2:45–3:00
 
-- Cắt bỏ thời gian chờ agent > 3 giây (dùng jump cut)
-- Zoom (1.5x) vào phần trích dẫn "Điều X, Khoản Y" ở Demo 1
-- Zoom vào cột "Cảnh báo tiên quyết" trong bảng lộ trình ở Demo 2
-- Highlight thông báo từ chối màu đỏ ở Demo 3
-- Thêm subtitle tiếng Anh (auto-generate rồi chỉnh thủ công)
-- Thêm logo Đại học Đại Nam + logo Google + logo Kaggle ở outro
+> "Cái này với mình không phải bài tập. Nó là bản thí điểm cho một việc thật mình đang phụ
+> trách ở trường, chạy từ tháng 8 năm nay tới giữa năm sau. Mục tiêu đơn giản: bớt thời gian,
+> bớt sai sót cho công tác giáo vụ. Cảm ơn mọi người đã xem. Mã nguồn và link demo mình để ở
+> phần mô tả."
+
+---
+
+## Vài lưu ý khi dựng
+
+- Câu nào agent chạy lâu quá vài giây thì cắt bớt cho gọn (jump cut).
+- Phóng to vào chỗ trích dẫn "[Điều 5, Khoản 2]" ở Demo 1 và bảng lộ trình ở Demo 2.
+- Nếu muốn có phụ đề tiếng Anh thì bật auto-caption rồi sửa lại vài chỗ.
+- Nhớ dùng dữ liệu mẫu (sinh viên giả) — không quay dữ liệu thật của sinh viên nào.

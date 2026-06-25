@@ -41,6 +41,14 @@ class PhanLoaiYeuCau(BaseModel):
             "(điểm số chi tiết, học lực, cảnh báo học vụ); 'thuong' cho mọi trường hợp còn lại."
         ),
     )
+    cau_hoi_goc: str = Field(
+        default="",
+        description=(
+            "Sao chép NGUYÊN VĂN toàn bộ yêu cầu/câu hỏi gốc của cán bộ. Các node "
+            "chuyên môn phía sau (tra cứu quy chế, lịch/điểm, biểu mẫu) dùng trường này "
+            "để xử lý đúng nội dung, vì chúng không thấy lại tin nhắn gốc."
+        ),
+    )
 
 
 # ---------------------------------------------------------------------------

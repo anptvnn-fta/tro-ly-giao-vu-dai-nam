@@ -83,6 +83,9 @@ Nếu yêu cầu đề cập đến dữ liệu cá nhân nhạy cảm (điểm 
 
 Nếu yêu cầu có chứa mã sinh viên (8-12 chữ số), ghi vào trường ma_sv.
 
+QUAN TRỌNG: Sao chép NGUYÊN VĂN toàn bộ câu hỏi/yêu cầu của cán bộ vào trường cau_hoi_goc
+(giữ đầy đủ nội dung, vì các bước sau không thấy lại tin nhắn gốc).
+
 Chỉ trả về JSON theo đúng schema — không thêm giải thích.
 """,
     output_schema=PhanLoaiYeuCau,
@@ -133,8 +136,11 @@ reg_lookup = LlmAgent(
     tools=[tra_cuu_quy_che],
     instruction="""Bạn là chuyên gia tra cứu quy chế đào tạo của Trường Đại học Đại Nam.
 
+Câu hỏi thực sự của cán bộ nằm ở trường "cau_hoi_goc" trong dữ liệu đầu vào bạn nhận được.
+
 Nhiệm vụ:
-1. Dùng tool tra_cuu_quy_che để tìm kiếm các đoạn văn bản liên quan trong quy chế.
+1. Gọi tool tra_cuu_quy_che với tham số cau_hoi = CHÍNH nội dung trong cau_hoi_goc.
+   TUYỆT ĐỐI không tự rút gọn thành từ khoá chung chung như "quy chế đào tạo".
 2. Soạn câu trả lời CHỈ DỰA TRÊN nội dung tìm được — không tự sáng tác quy định.
 3. Luôn trích dẫn nguồn theo dạng [Điều X, Khoản Y] khi có.
 4. Nếu không tìm thấy quy định phù hợp, trả lời:
@@ -155,6 +161,8 @@ path_planner = LlmAgent(
     model=_MODEL,
     tools=[lay_ho_so_sinh_vien, lay_chuong_trinh_dao_tao, tinh_lo_trinh_hoc_lai],
     instruction="""Bạn là cố vấn học tập chuyên về lộ trình học lại và trả nợ học phần tại Đại học Đại Nam.
+
+Mã sinh viên ở trường "ma_sv"; yêu cầu chi tiết (vd: số tín chỉ tối đa mỗi kỳ) ở "cau_hoi_goc".
 
 Quy trình xử lý:
 1. Dùng lay_ho_so_sinh_vien để lấy danh sách môn trượt/nợ.
@@ -185,8 +193,10 @@ lich_diem = LlmAgent(
     tools=[lay_lich_hoc, lay_bang_diem],
     instruction="""Bạn là trợ lý tra cứu thông tin học tập tại Đại học Đại Nam.
 
-Nhiệm vụ:
-- Nếu yêu cầu tra cứu lịch học / thời khóa biểu: dùng lay_lich_hoc, trình bày bảng lịch học theo ngày.
+Yêu cầu của cán bộ nằm ở trường "cau_hoi_goc", mã sinh viên ở trường "ma_sv".
+
+Nhiệm vụ (căn cứ nội dung cau_hoi_goc):
+- Nếu hỏi lịch học / thời khóa biểu: dùng lay_lich_hoc, trình bày bảng lịch học theo ngày.
 - Nếu yêu cầu tra cứu điểm / bảng điểm: dùng lay_bang_diem, trình bày bảng điểm rõ ràng kèm GPA.
 - Nếu yêu cầu cả hai: dùng cả hai tool.
 - Nếu không có mã sinh viên, yêu cầu cung cấp.
@@ -211,8 +221,8 @@ Các loại biểu mẫu hỗ trợ:
 - "canh_bao_hoc_vu": Thông báo cảnh báo học vụ
 - "xac_nhan_dang_ky": Xác nhận đăng ký học phần
 
-Quy trình:
-1. Xác định loại biểu mẫu cần tạo từ yêu cầu.
+Quy trình (căn cứ nội dung trong trường "cau_hoi_goc"):
+1. Xác định loại biểu mẫu cần tạo từ cau_hoi_goc.
 2. Thu thập thông tin cần thiết (mã SV, họ tên, danh sách môn...).
 3. Gọi tool tao_bieu_mau với loai_mau và du_lieu phù hợp.
 4. Trả về biểu mẫu đã điền sẵn và hướng dẫn ký xác nhận.

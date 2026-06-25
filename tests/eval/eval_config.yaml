@@ -11,9 +11,10 @@
 #   custom_response_quality >= 0.7 | agent_turn_count <= 5 | co_trich_dan >= 0.8
 #   tu_choi_dung >= 0.9 | thuc_thi_phan_quyen = 1.0
 
+# (Bỏ agent_turn_count: agents-cli coi đây là metric có sẵn của Vertex và đi tải
+#  từ GCS — không có nên lỗi. 4 metric dưới đây là đủ và chạy được.)
 metrics_to_run:
   - custom_response_quality
-  - agent_turn_count
   - co_trich_dan
   - tu_choi_dung
   - thuc_thi_phan_quyen

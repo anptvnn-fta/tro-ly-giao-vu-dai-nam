@@ -87,7 +87,10 @@ Chỉ trả về JSON theo đúng schema — không thêm giải thích.
 """,
     output_schema=PhanLoaiYeuCau,
     output_key="phan_loai",
-    before_model_callback=before_model_callback,
+    # Lưu ý: KHÔNG gắn before_model_callback (chặn injection) vào node này vì nó
+    # có output_schema — khi callback trả về câu từ chối dạng text, ADK sẽ ép
+    # thành JSON theo schema và lỗi. Injection vẫn được chặn ở các node chuyên môn
+    # (reg_lookup/path_planner/...) phía sau, vốn trả về text tự do.
 )
 
 # ---------------------------------------------------------------------------

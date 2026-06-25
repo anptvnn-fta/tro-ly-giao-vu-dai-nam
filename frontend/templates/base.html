@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Trợ lý Giáo vụ — Đại Nam{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN TOKENS (kế thừa từ App1/Day1 glassmorphic dark theme) ===== */
+:root {
+  /* Nền */
+  --bg-primary:    #0b0e14;
+  --bg-secondary:  #12161f;
+  --bg-card:       rgba(255,255,255,.04);
+  --bg-card-hover: rgba(255,255,255,.07);
+  --glass-border:  rgba(255,255,255,.08);
+  /* Màu nhấn */
+  --accent:        #7c5cfc;
+  --accent-glow:   rgba(124,92,252,.35);
+  --accent-hover:  #9b80ff;
+  --accent2:       #ff7a2f;
+  --accent2-glow:  rgba(255,122,47,.35);
+  /* Nguy hiểm / cảnh báo */
+  --danger:        #ff4d6a;
+  --danger-glow:   rgba(255,77,106,.25);
+  --warning:       #f5a623;
+  --warning-glow:  rgba(245,166,35,.25);
+  --success:       #34d399;
+  --success-glow:  rgba(52,211,153,.25);
+  /* Văn bản */
+  --text-primary:  #e8eaf0;
+  --text-secondary:#8b8fa3;
+  --text-muted:    #565a6e;
+  --completed:     #3a3d4f;
+  /* Bo góc */
+  --radius:        14px;
+  --radius-sm:     10px;
+  --radius-lg:     20px;
+  /* Chuyển cảnh */
+  --transition:    .25s cubic-bezier(.4,0,.2,1);
+  --font:          'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ===== RESET & CĂN BẢN ===== */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { font-size:16px; }
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Hiệu ứng orb nền */
+body::before, body::after {
+  content:''; position:fixed; border-radius:50%;
+  filter:blur(120px); opacity:.35; z-index:0; pointer-events:none;
+}
+body::before {
+  width:480px; height:480px;
+  background:radial-gradient(circle,var(--accent) 0%,transparent 70%);
+  top:-120px; left:-100px;
+  animation: floatOrb 20s ease-in-out infinite;
+}
+body::after {
+  width:380px; height:380px;
+  background:radial-gradient(circle,var(--danger) 0%,transparent 70%);
+  bottom:-80px; right:-80px;
+  animation: floatOrb 26s ease-in-out infinite reverse;
+}
+@keyframes floatOrb {
+  0%,100% { transform:translate(0,0); }
+  50%      { transform:translate(40px,30px); }
+}
+
+/* ===== THANH ĐIỀU HƯỚNG ===== */
+.navbar {
+  position: sticky; top:0; z-index:100;
+  display:flex; align-items:center; gap:0;
+  background: rgba(11,14,20,.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0 24px;
+  height: 60px;
+}
+.navbar-brand {
+  font-size:1rem; font-weight:700;
+  background: linear-gradient(135deg,var(--accent),#c084fc,var(--danger));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:-.02em;
+  white-space:nowrap;
+  margin-right:24px;
+  text-decoration:none;
+}
+.navbar-nav {
+  display:flex; align-items:center; gap:4px;
+  list-style:none; flex:1;
+  overflow-x:auto; scrollbar-width:none;
+}
+.navbar-nav::-webkit-scrollbar { display:none; }
+.navbar-nav a {
+  display:flex; align-items:center; gap:6px;
+  padding:8px 14px; border-radius:var(--radius-sm);
+  color:var(--text-secondary); text-decoration:none;
+  font-size:.85rem; font-weight:500; white-space:nowrap;
+  transition: color var(--transition), background var(--transition);
+}
+.navbar-nav a:hover, .navbar-nav a.active {
+  color:var(--text-primary);
+  background: var(--bg-card-hover);
+}
+.navbar-nav a.active {
+  color:var(--accent);
+  border-bottom: 2px solid var(--accent);
+}
+.navbar-nav .nav-icon { font-size:1rem; }
+
+/* Chọn vai trò trong navbar */
+.role-form {
+  display:flex; align-items:center; gap:8px;
+  margin-left:auto; flex-shrink:0;
+}
+.role-form label {
+  font-size:.75rem; color:var(--text-muted); white-space:nowrap;
+}
+.role-select {
+  padding:6px 12px; border-radius:var(--radius-sm);
+  border:1px solid var(--glass-border);
+  background:var(--bg-card); color:var(--text-primary);
+  font-family:var(--font); font-size:.82rem;
+  cursor:pointer; outline:none;
+  transition: border-color var(--transition);
+}
+.role-select:focus { border-color:var(--accent); }
+.role-select option { background:var(--bg-secondary); }
+.role-badge {
+  display:inline-flex; align-items:center;
+  padding:4px 10px; border-radius:999px;
+  background:var(--accent-glow); color:var(--accent);
+  font-size:.72rem; font-weight:600;
+  border:1px solid rgba(124,92,252,.3);
+}
+
+/* Nút đổi vai trò */
+.btn-role-switch {
+  padding:6px 14px; border-radius:var(--radius-sm);
+  border:1px solid var(--glass-border);
+  background:transparent; color:var(--text-secondary);
+  font-family:var(--font); font-size:.8rem; cursor:pointer;
+  transition: all var(--transition);
+}
+.btn-role-switch:hover {
+  border-color:var(--accent); color:var(--accent);
+  background:var(--accent-glow);
+}
+
+/* ===== KHU VỰC NỘI DUNG CHÍNH ===== */
+.main-content {
+  position:relative; z-index:1;
+  max-width:960px; margin:0 auto;
+  padding:36px 24px 80px;
+}
+
+/* ===== TIÊU ĐỀ TRANG ===== */
+.page-header {
+  margin-bottom:32px;
+}
+.page-header h1 {
+  font-size:1.9rem; font-weight:700; letter-spacing:-.02em;
+  background:linear-gradient(135deg,var(--accent),#c084fc);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.page-header p {
+  color:var(--text-secondary); font-size:.9rem; margin-top:6px;
+}
+
+/* ===== THẺ KÍNH (GLASSMORPHIC) ===== */
+.card {
+  background: var(--bg-card);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius);
+  backdrop-filter:blur(12px);
+  padding:24px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.card:hover { border-color:rgba(255,255,255,.12); }
+.card-title {
+  font-size:1rem; font-weight:600; margin-bottom:16px;
+  color:var(--text-primary);
+}
+
+/* ===== FORM CONTROLS ===== */
+.form-group {
+  display:flex; flex-direction:column; gap:6px;
+  margin-bottom:16px;
+}
+.form-group label {
+  font-size:.82rem; font-weight:500; color:var(--text-secondary);
+}
+.form-input, .form-select, .form-textarea {
+  padding:12px 16px;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--glass-border);
+  background:var(--bg-card);
+  color:var(--text-primary);
+  font-family:var(--font); font-size:.9rem;
+  outline:none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.form-input::placeholder, .form-textarea::placeholder {
+  color:var(--text-muted);
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+.form-select option { background:var(--bg-secondary); }
+.form-textarea { resize:vertical; min-height:100px; }
+.form-row {
+  display:flex; gap:12px;
+}
+.form-row > * { flex:1; }
+
+/* ===== NÚT ===== */
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:11px 22px; border-radius:var(--radius-sm);
+  border:none; font-family:var(--font);
+  font-size:.9rem; font-weight:600;
+  cursor:pointer; text-decoration:none;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+  white-space:nowrap;
+}
+.btn:active { transform:scale(.97); }
+.btn-primary {
+  background:linear-gradient(135deg,var(--accent),#9b80ff);
+  color:#fff;
+}
+.btn-primary:hover {
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px var(--accent-glow);
+}
+.btn-secondary {
+  background:var(--bg-card);
+  border:1px solid var(--glass-border);
+  color:var(--text-secondary);
+}
+.btn-secondary:hover {
+  border-color:var(--accent);
+  color:var(--accent);
+  background:var(--accent-glow);
+}
+.btn-danger {
+  background:transparent;
+  border:1px solid rgba(255,77,106,.4);
+  color:var(--danger);
+}
+.btn-danger:hover {
+  background:var(--danger-glow);
+  border-color:var(--danger);
+}
+.btn-success {
+  background:linear-gradient(135deg,#34d399,#10b981);
+  color:#fff;
+}
+.btn-success:hover {
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px var(--success-glow);
+}
+
+/* ===== THÔNG BÁO (FLASH) ===== */
+.flash-list {
+  list-style:none; margin-bottom:20px;
+  display:flex; flex-direction:column; gap:8px;
+}
+.flash-item {
+  padding:12px 16px; border-radius:var(--radius-sm);
+  font-size:.88rem;
+  display:flex; align-items:center; gap:10px;
+}
+.flash-item.success { background:var(--success-glow); color:var(--success); border:1px solid rgba(52,211,153,.3); }
+.flash-item.danger  { background:var(--danger-glow);  color:var(--danger);  border:1px solid rgba(255,77,106,.3); }
+.flash-item.warning { background:var(--warning-glow); color:var(--warning); border:1px solid rgba(245,166,35,.3); }
+.flash-item.info    { background:var(--accent-glow);  color:var(--accent);  border:1px solid rgba(124,92,252,.3); }
+
+/* ===== BẢNG DỮ LIỆU ===== */
+.data-table {
+  width:100%; border-collapse:collapse;
+  font-size:.85rem;
+}
+.data-table th {
+  padding:10px 14px; text-align:left;
+  font-size:.72rem; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--text-muted);
+  border-bottom:1px solid var(--glass-border);
+}
+.data-table td {
+  padding:12px 14px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  color:var(--text-secondary);
+  vertical-align:top;
+}
+.data-table tbody tr:hover td { background:var(--bg-card-hover); }
+.data-table tbody tr:last-child td { border-bottom:none; }
+
+/* ===== HUY HIỆU TRẠNG THÁI ===== */
+.badge {
+  display:inline-block; padding:3px 10px;
+  border-radius:999px; font-size:.72rem; font-weight:600;
+}
+.badge-dat     { background:var(--success-glow); color:var(--success); }
+.badge-truot   { background:var(--danger-glow);  color:var(--danger); }
+.badge-no      { background:var(--warning-glow); color:var(--warning); }
+.badge-default { background:var(--bg-card-hover); color:var(--text-secondary); }
+
+/* ===== PHÂN CÁCH ===== */
+.divider {
+  height:1px; background:var(--glass-border);
+  margin:24px 0;
+}
+
+/* ===== KẾT QUẢ AGENT ===== */
+.agent-response {
+  background:var(--bg-secondary);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius-sm);
+  padding:20px;
+  color:var(--text-primary);
+  font-size:.9rem; line-height:1.7;
+  white-space:pre-wrap; word-break:break-word;
+}
+.agent-response strong, .agent-response b {
+  color:var(--accent);
+}
+
+/* ===== TRẠNG THÁI RỖNG ===== */
+.empty-state {
+  text-align:center; padding:60px 20px;
+  color:var(--text-muted);
+}
+.empty-state .icon { font-size:3rem; margin-bottom:12px; opacity:.5; }
+.empty-state p { font-size:.9rem; }
+
+/* ===== CHÚ THÍCH KHÁI NIỆM (footer note) ===== */
+.concept-note {
+  margin-top:40px;
+  padding:14px 18px;
+  background:rgba(124,92,252,.06);
+  border:1px solid rgba(124,92,252,.2);
+  border-radius:var(--radius-sm);
+  font-size:.78rem; color:var(--text-muted);
+  display:flex; align-items:flex-start; gap:10px;
+}
+.concept-note .cn-icon { font-size:1rem; flex-shrink:0; margin-top:1px; }
+.concept-note strong { color:var(--accent); }
+
+/* ===== LOADING SPINNER ===== */
+.spinner {
+  display:inline-block; width:18px; height:18px;
+  border:2px solid var(--glass-border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ===== ĐÁP ỨNG DI ĐỘNG ===== */
+@media (max-width:640px) {
+  .navbar { padding:0 16px; }
+  .main-content { padding:24px 16px 60px; }
+  .form-row { flex-direction:column; }
+  .page-header h1 { font-size:1.5rem; }
+}
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- ===== THANH ĐIỀU HƯỚNG ===== -->
+<nav class="navbar">
+  <a class="navbar-brand" href="/">Giáo vụ AI</a>
+  <ul class="navbar-nav">
+    <li><a href="/tra-cuu"
+           {% if request.path == '/tra-cuu' %}class="active"{% endif %}>
+      <span class="nav-icon">&#128269;</span> Tra cứu quy chế
+    </a></li>
+    <li><a href="/lo-trinh"
+           {% if request.path == '/lo-trinh' %}class="active"{% endif %}>
+      <span class="nav-icon">&#128203;</span> Lộ trình học lại
+    </a></li>
+    <li><a href="/lich-diem"
+           {% if request.path == '/lich-diem' %}class="active"{% endif %}>
+      <span class="nav-icon">&#128197;</span> Lịch &amp; Điểm
+    </a></li>
+    <li><a href="/hang-doi"
+           {% if request.path == '/hang-doi' %}class="active"{% endif %}>
+      <span class="nav-icon">&#9989;</span> Hàng đợi duyệt
+    </a></li>
+    <li><a href="/bao-cao"
+           {% if request.path == '/bao-cao' %}class="active"{% endif %}>
+      <span class="nav-icon">&#128202;</span> Báo cáo
+    </a></li>
+  </ul>
+
+  <!-- Chọn vai trò nhanh trong nav -->
+  <div class="role-form">
+    {% if session.get('vai_tro') %}
+      <span class="role-badge">{{ session.vai_tro_label }}</span>
+    {% endif %}
+    <form method="POST" action="/chon-vai-tro" style="display:flex;gap:8px;align-items:center;">
+      <select name="vai_tro" class="role-select" onchange="this.form.submit()" title="Chọn vai trò">
+        <option value="" disabled {% if not session.get('vai_tro') %}selected{% endif %}>Chọn vai trò</option>
+        <option value="giao_vu"              {% if session.get('vai_tro')=='giao_vu' %}selected{% endif %}>Cán bộ Giáo vụ</option>
+        <option value="truong_phong_dao_tao" {% if session.get('vai_tro')=='truong_phong_dao_tao' %}selected{% endif %}>Trưởng phòng Đào tạo</option>
+        <option value="tra_cuu_vien"         {% if session.get('vai_tro')=='tra_cuu_vien' %}selected{% endif %}>Tra cứu viên</option>
+      </select>
+    </form>
+  </div>
+</nav>
+
+<!-- ===== NỘI DUNG CHÍNH ===== -->
+<main class="main-content">
+
+  <!-- Thông báo flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="flash-list">
+      {% for cat, msg in messages %}
+      <li class="flash-item {{ cat }}">{{ msg }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+
+</main>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

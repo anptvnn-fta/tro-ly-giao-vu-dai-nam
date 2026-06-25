@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Tra cứu quy chế — Giáo vụ Đại Nam{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>&#128269; Tra cứu quy chế đào tạo</h1>
+  <p>Đặt câu hỏi về quy định đào tạo, học phí, cảnh báo học vụ — agent sẽ trả lời có trích dẫn điều khoản.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+
+  <!-- Cột trái: form nhập câu hỏi -->
+  <div>
+    <div class="card">
+      <div class="card-title">Nhập câu hỏi</div>
+      <form method="POST" action="/tra-cuu" id="form-tra-cuu">
+        <div class="form-group">
+          <label for="cau_hoi">Câu hỏi của bạn</label>
+          <textarea
+            name="cau_hoi"
+            id="cau_hoi"
+            class="form-textarea"
+            rows="5"
+            placeholder="Ví dụ: Sinh viên bị cảnh báo học vụ mức 2 thì có điều kiện gì để đăng ký học lại?"
+            required>{{ cau_hoi }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" id="btn-submit" style="width:100%;justify-content:center;">
+          <span id="btn-text">Tra cứu</span>
+          <span id="btn-spinner" class="spinner" style="display:none;"></span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Gợi ý câu hỏi thường gặp -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title" style="font-size:.85rem;">Câu hỏi thường gặp</div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+        {% set faqs = [
+          'Điều kiện để học lại một học phần là gì?',
+          'Học lại có bị tính học phí không?',
+          'Sinh viên nợ học phần bao nhiêu tín chỉ thì bị cảnh báo mức 1?',
+          'Điều kiện xét tốt nghiệp là gì?',
+          'Điểm F có được cải thiện không hay phải học lại?',
+        ] %}
+        {% for faq in faqs %}
+        <li>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            style="width:100%;text-align:left;font-size:.8rem;padding:8px 12px;"
+            onclick="document.getElementById('cau_hoi').value = this.dataset.q"
+            data-q="{{ faq }}"
+          >{{ faq }}</button>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Cột phải: kết quả -->
+  <div>
+    {% if error %}
+    <div class="card" style="border-color:rgba(255,77,106,.4);">
+      <div class="card-title" style="color:var(--danger);">&#9888; Lỗi kết nối agent</div>
+      <p style="font-size:.85rem;color:var(--text-secondary);">{{ error }}</p>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-top:8px;">
+        Kiểm tra FASTAPI_URL và đảm bảo ADK FastAPI đang chạy.
+      </p>
+    </div>
+    {% elif ket_qua %}
+    <div class="card">
+      <div class="card-title">Kết quả tra cứu</div>
+      <div class="agent-response">{{ ket_qua }}</div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="icon">&#128269;</div>
+      <p>Nhập câu hỏi và nhấn <strong>Tra cứu</strong> để nhận câu trả lời từ agent.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<div class="concept-note">
+  <span class="cn-icon">&#128218;</span>
+  <span>
+    <strong>Day 1 — RAG Tool + Orchestration:</strong>
+    Trang này minh hoạ node <code>reg_lookup</code> dùng tool <code>tra_cuu_quy_che</code> (RAG đơn giản trên
+    <code>data/quy_che/*.md</code>). Agent chỉ trả lời dựa trên đoạn văn được truy xuất, trích dẫn [Điều X, Khoản Y],
+    từ chối nếu không tìm thấy — minh hoạ <em>grounding + citation discipline</em>.
+    Vai trò <code>{{ session.get('vai_tro', '?') }}</code> được truyền vào session state để
+    <code>SafetyPlugin</code> (Day 4) kiểm tra quyền trước khi gọi tool.
+  </span>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Hiển thị spinner khi đang chờ agent phản hồi
+  document.getElementById('form-tra-cuu').addEventListener('submit', function() {
+    document.getElementById('btn-text').style.display = 'none';
+    document.getElementById('btn-spinner').style.display = 'inline-block';
+    document.getElementById('btn-submit').disabled = true;
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,171 @@
+{
+  "nganh": "CNTT",
+  "ten_nganh": "Công nghệ Thông tin",
+  "ma_nganh": "7480201",
+  "tong_tin_chi": 139,
+  "thoi_gian_dao_tao": 4,
+  "cap_do": "Đại học",
+  "mo_ta": "Chương trình đào tạo ngành Công nghệ Thông tin định hướng kỹ sư phần mềm, trang bị kiến thức nền tảng và kỹ năng thực tế về phát triển phần mềm, cơ sở dữ liệu, mạng máy tính và trí tuệ nhân tạo.",
+  "hoc_phan": [
+    {
+      "ma_mon": "CNTT001",
+      "ten_mon": "Nhập môn Lập trình",
+      "tin_chi": 3,
+      "tien_quyet": [],
+      "song_hanh": [],
+      "ky_goi_y": 1,
+      "loai": "bat_buoc",
+      "mo_ta": "Giới thiệu tư duy lập trình, cấu trúc chương trình cơ bản, kiểu dữ liệu, vòng lặp và hàm với ngôn ngữ Python."
+    },
+    {
+      "ma_mon": "CNTT002",
+      "ten_mon": "Toán Rời rạc",
+      "tin_chi": 3,
+      "tien_quyet": [],
+      "song_hanh": [],
+      "ky_goi_y": 1,
+      "loai": "bat_buoc",
+      "mo_ta": "Logic mệnh đề, lý thuyết tập hợp, quan hệ, đồ thị, đại số Boole và ứng dụng trong khoa học máy tính."
+    },
+    {
+      "ma_mon": "CNTT003",
+      "ten_mon": "Lập trình Hướng đối tượng",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT001"],
+      "song_hanh": [],
+      "ky_goi_y": 2,
+      "loai": "bat_buoc",
+      "mo_ta": "Các nguyên lý OOP: đóng gói, kế thừa, đa hình, trừu tượng hóa. Thực hành với ngôn ngữ Java."
+    },
+    {
+      "ma_mon": "CNTT004",
+      "ten_mon": "Cấu trúc Dữ liệu và Giải thuật",
+      "tin_chi": 4,
+      "tien_quyet": ["CNTT001", "CNTT002"],
+      "song_hanh": [],
+      "ky_goi_y": 2,
+      "loai": "bat_buoc",
+      "mo_ta": "Mảng, danh sách liên kết, ngăn xếp, hàng đợi, cây, đồ thị. Các thuật toán sắp xếp, tìm kiếm và phân tích độ phức tạp."
+    },
+    {
+      "ma_mon": "CNTT005",
+      "ten_mon": "Cơ sở Dữ liệu",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT001"],
+      "song_hanh": [],
+      "ky_goi_y": 3,
+      "loai": "bat_buoc",
+      "mo_ta": "Mô hình quan hệ, thiết kế CSDL, chuẩn hóa, ngôn ngữ SQL, giao dịch và tối ưu hóa truy vấn."
+    },
+    {
+      "ma_mon": "CNTT006",
+      "ten_mon": "Hệ điều hành",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT002"],
+      "song_hanh": [],
+      "ky_goi_y": 3,
+      "loai": "bat_buoc",
+      "mo_ta": "Kiến trúc hệ điều hành, quản lý tiến trình, quản lý bộ nhớ, hệ thống tệp, bảo mật và hệ điều hành Linux."
+    },
+    {
+      "ma_mon": "CNTT007",
+      "ten_mon": "Mạng Máy tính",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT006"],
+      "song_hanh": [],
+      "ky_goi_y": 4,
+      "loai": "bat_buoc",
+      "mo_ta": "Mô hình OSI/TCP-IP, các giao thức mạng, định tuyến, mạng LAN/WAN, bảo mật mạng cơ bản."
+    },
+    {
+      "ma_mon": "CNTT008",
+      "ten_mon": "Phát triển Ứng dụng Web",
+      "tin_chi": 4,
+      "tien_quyet": ["CNTT003", "CNTT005"],
+      "song_hanh": [],
+      "ky_goi_y": 4,
+      "loai": "bat_buoc",
+      "mo_ta": "HTML/CSS/JavaScript, lập trình phía server (Node.js/Python Flask), RESTful API, kết nối CSDL và triển khai ứng dụng web."
+    },
+    {
+      "ma_mon": "CNTT009",
+      "ten_mon": "Kỹ nghệ Phần mềm",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT003", "CNTT004"],
+      "song_hanh": [],
+      "ky_goi_y": 5,
+      "loai": "bat_buoc",
+      "mo_ta": "Quy trình phát triển phần mềm, phân tích yêu cầu, thiết kế UML, kiểm thử phần mềm, quản lý dự án Agile/Scrum."
+    },
+    {
+      "ma_mon": "CNTT010",
+      "ten_mon": "Trí tuệ Nhân tạo",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT004", "CNTT002"],
+      "song_hanh": [],
+      "ky_goi_y": 5,
+      "loai": "bat_buoc",
+      "mo_ta": "Các thuật toán tìm kiếm, biểu diễn tri thức, suy luận, học máy cơ bản và ứng dụng AI thực tiễn."
+    },
+    {
+      "ma_mon": "CNTT011",
+      "ten_mon": "Học máy và Khai thác Dữ liệu",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT010", "CNTT005"],
+      "song_hanh": [],
+      "ky_goi_y": 6,
+      "loai": "bat_buoc",
+      "mo_ta": "Học có giám sát, không giám sát, hồi quy, phân loại, phân cụm, khai thác dữ liệu và xử lý dữ liệu lớn cơ bản."
+    },
+    {
+      "ma_mon": "CNTT012",
+      "ten_mon": "An toàn và Bảo mật Thông tin",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT007"],
+      "song_hanh": [],
+      "ky_goi_y": 6,
+      "loai": "bat_buoc",
+      "mo_ta": "Mã hóa đối xứng và bất đối xứng, PKI, bảo mật ứng dụng web, kiểm thử xâm nhập cơ bản và quản lý rủi ro bảo mật."
+    },
+    {
+      "ma_mon": "CNTT013",
+      "ten_mon": "Điện toán Đám mây và DevOps",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT007", "CNTT008"],
+      "song_hanh": [],
+      "ky_goi_y": 7,
+      "loai": "tu_chon_bat_buoc",
+      "mo_ta": "Kiến trúc đám mây (AWS/GCP/Azure cơ bản), container Docker, orchestration Kubernetes, CI/CD pipeline và Infrastructure as Code."
+    },
+    {
+      "ma_mon": "CNTT014",
+      "ten_mon": "Đồ án Tốt nghiệp",
+      "tin_chi": 10,
+      "tien_quyet": ["CNTT009", "CNTT010", "CNTT011"],
+      "song_hanh": [],
+      "ky_goi_y": 8,
+      "loai": "bat_buoc",
+      "mo_ta": "Sinh viên thực hiện dự án phần mềm hoàn chỉnh theo nhóm, áp dụng toàn bộ kiến thức đã học, trình bày và bảo vệ trước hội đồng."
+    },
+    {
+      "ma_mon": "CNTT015",
+      "ten_mon": "Thực tập Doanh nghiệp",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT009"],
+      "song_hanh": [],
+      "ky_goi_y": 7,
+      "loai": "bat_buoc",
+      "mo_ta": "Thực tập 8 tuần tại doanh nghiệp đối tác, viết báo cáo thực tập và trình bày kết quả trước giảng viên hướng dẫn."
+    },
+    {
+      "ma_mon": "CNTT016",
+      "ten_mon": "Lập trình Di động",
+      "tin_chi": 3,
+      "tien_quyet": ["CNTT003", "CNTT008"],
+      "song_hanh": [],
+      "ky_goi_y": 6,
+      "loai": "tu_chon",
+      "mo_ta": "Phát triển ứng dụng Android và iOS với React Native, thiết kế giao diện di động, kết nối API và xuất bản ứng dụng."
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+# ============================================================
+# .gitignore cho Trợ lý Giáo vụ Đại Nam
+# ============================================================
+
+# -- Môi trường và bí mật --
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+credentials.json
+service_account.json
+
+# -- Python --
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# -- Virtual environments --
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# -- uv --
+uv.lock
+.uv/
+
+# -- Tests và coverage --
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+
+# -- IDEs --
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# -- Jupyter --
+.ipynb_checkpoints
+*.ipynb
+
+# -- Logs --
+*.log
+logs/
+
+# -- Dữ liệu nhạy cảm (KHÔNG commit dữ liệu SV thật) --
+data/sinh_vien_diem_real.csv
+data/backup/
+*.bak
+
+# -- Frontend build --
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/__pycache__/
+
+# -- Docker --
+.dockerignore.bak
+
+# -- Google Cloud --
+.gcloudignore.bak
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+*.tfvars
+
+# -- Eval outputs (kết quả eval thường lớn, không cần commit) --
+tests/eval/results/
+tests/eval/traces/
+*.eval_result.json
+
+# -- agents-cli / eval artifacts (sinh tự động khi chạy) --
+artifacts/
+.agents-cli-scripts/

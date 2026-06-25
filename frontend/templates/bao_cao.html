@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Báo cáo xử lý yêu cầu — Giáo vụ Đại Nam{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>&#128202; Báo cáo xử lý yêu cầu</h1>
+  <p>Tổng hợp nhật ký yêu cầu từ <code>data/nhat_ky_yeu_cau.csv</code> — cập nhật sau mỗi phiên làm việc.</p>
+</div>
+
+<!-- Thống kê tổng quan -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px;">
+
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.2rem;font-weight:700;color:var(--accent);">{{ tong_yeu_cau }}</div>
+    <div style="font-size:.8rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;">Tổng yêu cầu</div>
+  </div>
+
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.2rem;font-weight:700;color:var(--success);">{{ theo_loai.get('tra_cuu_quy_che', 0) }}</div>
+    <div style="font-size:.8rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;">Tra cứu quy chế</div>
+  </div>
+
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.2rem;font-weight:700;color:var(--accent2);">{{ theo_loai.get('lo_trinh_hoc_lai', 0) }}</div>
+    <div style="font-size:.8rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;">Lộ trình học lại</div>
+  </div>
+
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.2rem;font-weight:700;color:var(--warning);">{{ theo_loai.get('ngoai_pham_vi', 0) }}</div>
+    <div style="font-size:.8rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;">Ngoài phạm vi</div>
+  </div>
+
+</div>
+
+<!-- Thống kê theo loại -->
+{% if theo_loai %}
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;">
+
+  <div class="card">
+    <div class="card-title">Phân bổ theo loại yêu cầu</div>
+    {% set total = tong_yeu_cau if tong_yeu_cau > 0 else 1 %}
+    {% for loai, so_luong in theo_loai.items() %}
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px;">
+        <span style="color:var(--text-secondary);">{{ loai }}</span>
+        <span style="color:var(--text-primary);font-weight:600;">{{ so_luong }}</span>
+      </div>
+      <div style="height:6px;background:var(--bg-card);border-radius:999px;overflow:hidden;">
+        <div style="height:100%;background:var(--accent);border-radius:999px;width:{{ (so_luong / total * 100)|int }}%;"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <div class="card-title">Theo vai trò</div>
+    {% for vaitro, so_luong in theo_vai_tro.items() %}
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px;">
+        <span style="color:var(--text-secondary);">{{ vaitro }}</span>
+        <span style="color:var(--text-primary);font-weight:600;">{{ so_luong }}</span>
+      </div>
+      <div style="height:6px;background:var(--bg-card);border-radius:999px;overflow:hidden;">
+        <div style="height:100%;background:var(--accent2);border-radius:999px;width:{{ (so_luong / total * 100)|int }}%;"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endif %}
+
+<!-- Bảng chi tiết nhật ký -->
+<div class="card">
+  <div class="card-title">Chi tiết nhật ký yêu cầu</div>
+  {% if nhat_ky %}
+  <div style="overflow-x:auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Thời gian</th>
+          <th>Cán bộ</th>
+          <th>Vai trò</th>
+          <th>Loại yêu cầu</th>
+          <th>Mã SV</th>
+          <th>Kết quả tóm tắt</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in nhat_ky | reverse %}
+        <tr>
+          <td style="white-space:nowrap;font-size:.78rem;">{{ row.get('thoi_gian', '') }}</td>
+          <td style="font-size:.85rem;">{{ row.get('can_bo', '') }}</td>
+          <td>
+            <span class="badge badge-default" style="font-size:.7rem;">{{ row.get('vai_tro', '') }}</span>
+          </td>
+          <td>
+            {% set loai = row.get('loai_yeu_cau', '') %}
+            {% if loai == 'tra_cuu_quy_che' %}
+              <span class="badge badge-dat">Tra cứu</span>
+            {% elif loai == 'lo_trinh_hoc_lai' %}
+              <span class="badge" style="background:var(--accent-glow);color:var(--accent);">Lộ trình</span>
+            {% elif loai == 'ngoai_pham_vi' %}
+              <span class="badge badge-truot">Ngoài PV</span>
+            {% else %}
+              <span class="badge badge-default">{{ loai }}</span>
+            {% endif %}
+          </td>
+          <td><code style="font-size:.8rem;">{{ row.get('ma_sv', '') }}</code></td>
+          <td style="max-width:280px;font-size:.82rem;">{{ row.get('ket_qua_tom_tat', '') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state" style="padding:40px 20px;">
+    <div class="icon">&#128202;</div>
+    <p>
+      Chưa có dữ liệu nhật ký.<br>
+      File <code>data/nhat_ky_yeu_cau.csv</code> sẽ được điền tự động sau mỗi phiên tư vấn.
+    </p>
+  </div>
+  {% endif %}
+</div>
+
+<div class="concept-note">
+  <span class="cn-icon">&#128218;</span>
+  <span>
+    <strong>Day 5 — Báo cáo xử lý yêu cầu + Agent Quality Flywheel (Day 4):</strong>
+    Trang này đọc trực tiếp <code>data/nhat_ky_yeu_cau.csv</code> được ghi bởi tool
+    <code>ghi_nhat_ky_yeu_cau</code> ở node <code>merge_log</code>.
+    Nhật ký này là nền tảng của <em>Agent Quality Flywheel</em>: phân tích yêu cầu thực tế
+    &#8594; tạo eval cases mới &#8594; cải thiện agent (Day 4).
+    Báo cáo xử lý yêu cầu là một trong các <em>Expected products</em> của dự án
+    "AI hỗ trợ công tác giáo vụ" tại Đại học Đại Nam.
+  </span>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Lộ trình học lại — Giáo vụ Đại Nam{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>&#128203; Lộ trình học lại / Trả nợ học phần</h1>
+  <p>Nhập mã sinh viên để agent tự động lập kế hoạch học lại, kiểm tra tiên quyết và xung đột lịch.</p>
+</div>
+
+<!-- Form nhập liệu -->
+<div class="card" style="max-width:600px;margin-bottom:24px;">
+  <div class="card-title">Thông tin sinh viên</div>
+  <form method="POST" action="/lo-trinh" id="form-lo-trinh">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="ma_sv">Mã sinh viên</label>
+        <input
+          type="text"
+          name="ma_sv"
+          id="ma_sv"
+          class="form-input"
+          placeholder="VD: 20210001"
+          value="{{ ma_sv }}"
+          pattern="[0-9]{8,12}"
+          title="Mã sinh viên từ 8–12 chữ số"
+          required
+        >
+      </div>
+      <div class="form-group">
+        <label for="so_tc">Tín chỉ tối đa/kỳ</label>
+        <input
+          type="number"
+          name="so_tc"
+          id="so_tc"
+          class="form-input"
+          min="6"
+          max="30"
+          value="{{ so_tc }}"
+        >
+      </div>
+    </div>
+
+    <div class="form-group" style="flex-direction:row;align-items:center;gap:10px;margin-bottom:20px;">
+      <input type="checkbox" name="xuat_bieu_mau" id="xuat_bieu_mau"
+             value="1" {% if xuat_bieu_mau %}checked{% endif %}
+             style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer;">
+      <label for="xuat_bieu_mau" style="font-size:.88rem;cursor:pointer;margin-bottom:0;">
+        Xuất biểu mẫu theo dõi sau khi lập lộ trình
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="btn-lo-trinh" style="width:100%;justify-content:center;">
+      <span id="btn-text-lt">Lập lộ trình</span>
+      <span id="btn-spinner-lt" class="spinner" style="display:none;"></span>
+    </button>
+  </form>
+</div>
+
+{% if error %}
+<div class="card" style="border-color:rgba(255,77,106,.4);margin-bottom:24px;">
+  <div class="card-title" style="color:var(--danger);">&#9888; Lỗi</div>
+  <p style="font-size:.85rem;color:var(--text-secondary);">{{ error }}</p>
+</div>
+{% endif %}
+
+{% if ket_qua %}
+<!-- Kết quả lộ trình -->
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-title">Đề xuất lộ trình học lại — Sinh viên {{ ma_sv }}</div>
+  <div class="agent-response">{{ ket_qua }}</div>
+</div>
+
+  {% if bieu_mau_html %}
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-title">Biểu mẫu theo dõi</div>
+    <div class="agent-response">{{ bieu_mau_html }}</div>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      style="margin-top:16px;"
+      onclick="window.print()"
+    >&#128438; In biểu mẫu</button>
+  </div>
+  {% endif %}
+
+{% else %}
+<div class="empty-state">
+  <div class="icon">&#128203;</div>
+  <p>Nhập mã sinh viên và nhấn <strong>Lập lộ trình</strong> để nhận kế hoạch học lại.</p>
+</div>
+{% endif %}
+
+<div class="concept-note">
+  <span class="cn-icon">&#128218;</span>
+  <span>
+    <strong>Day 2 — Function Tools với Typed Params + Day 3 — State Scratchpad:</strong>
+    Node <code>path_planner</code> gọi các tool <code>lay_ho_so_sinh_vien</code>,
+    <code>lay_chuong_trinh_dao_tao</code>, <code>tinh_lo_trinh_hoc_lai</code> (thuần Python,
+    topo-sort tiên quyết, pack tín chỉ theo kỳ, kiểm tra xung đột lịch).
+    Kết quả được ghi vào <code>output_key</code> (state scratchpad — Day 3) và node
+    <code>merge_log</code> gọi <code>ghi_nhat_ky_yeu_cau</code> để lưu nhật ký.
+    Tùy chọn <em>Xuất biểu mẫu</em> minh hoạ tool <code>tao_bieu_mau</code> (biểu mẫu theo dõi).
+  </span>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.getElementById('form-lo-trinh').addEventListener('submit', function() {
+    document.getElementById('btn-text-lt').style.display = 'none';
+    document.getElementById('btn-spinner-lt').style.display = 'inline-block';
+    document.getElementById('btn-lo-trinh').disabled = true;
+  });
+</script>
+{% endblock %}

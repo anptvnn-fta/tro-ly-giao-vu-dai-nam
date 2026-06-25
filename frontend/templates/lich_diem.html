@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Lịch &amp; Điểm — Giáo vụ Đại Nam{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>&#128197; Tra cứu lịch học &amp; bảng điểm</h1>
+  <p>Tra cứu lịch học hoặc bảng điểm cho sinh viên theo mã số.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+
+  <!-- Form -->
+  <div class="card">
+    <div class="card-title">Tra cứu</div>
+    <form method="POST" action="/lich-diem" id="form-lich-diem">
+
+      <div class="form-group">
+        <label for="ma_sv">Mã sinh viên</label>
+        <input
+          type="text"
+          name="ma_sv"
+          id="ma_sv"
+          class="form-input"
+          placeholder="VD: 20210001"
+          value="{{ ma_sv }}"
+          pattern="[0-9]{8,12}"
+          title="Mã sinh viên từ 8–12 chữ số"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Loại tra cứu</label>
+        <div style="display:flex;gap:12px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.88rem;">
+            <input type="radio" name="loai_tra_cuu" value="lich"
+                   {% if loai_tra_cuu == 'lich' %}checked{% endif %}
+                   style="accent-color:var(--accent);">
+            Lịch học
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.88rem;">
+            <input type="radio" name="loai_tra_cuu" value="diem"
+                   {% if loai_tra_cuu == 'diem' %}checked{% endif %}
+                   style="accent-color:var(--accent);">
+            Bảng điểm
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="btn-ld" style="width:100%;justify-content:center;">
+        <span id="btn-text-ld">Tra cứu</span>
+        <span id="btn-spinner-ld" class="spinner" style="display:none;"></span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Kết quả -->
+  <div>
+    {% if error %}
+    <div class="card" style="border-color:rgba(255,77,106,.4);">
+      <div class="card-title" style="color:var(--danger);">&#9888; Lỗi</div>
+      <p style="font-size:.85rem;color:var(--text-secondary);">{{ error }}</p>
+    </div>
+    {% elif ket_qua %}
+    <div class="card">
+      <div class="card-title">
+        {% if loai_tra_cuu == 'diem' %}Bảng điểm — {{ ma_sv }}{% else %}Lịch học — {{ ma_sv }}{% endif %}
+      </div>
+      <div class="agent-response">{{ ket_qua }}</div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="icon">&#128197;</div>
+      <p>Nhập mã sinh viên và chọn loại tra cứu.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<div class="concept-note">
+  <span class="cn-icon">&#128218;</span>
+  <span>
+    <strong>Day 2 — Function Tools (lay_lich_hoc, lay_bang_diem) + Day 3 — Session State:</strong>
+    Node <code>lich_diem</code> sử dụng hai tool riêng biệt, mỗi tool có docstring + typed params
+    theo chuẩn OpenAPI-style (Day 2). Kết quả được đọc từ <code>data/lich_hoc.csv</code> và
+    <code>data/sinh_vien_diem.csv</code>. Vai trò trong session (Day 3) kiểm soát
+    xem <code>SafetyPlugin</code> có chặn truy xuất dữ liệu nhạy cảm hay không (Day 4).
+  </span>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.getElementById('form-lich-diem').addEventListener('submit', function() {
+    document.getElementById('btn-text-ld').style.display = 'none';
+    document.getElementById('btn-spinner-ld').style.display = 'inline-block';
+    document.getElementById('btn-ld').disabled = true;
+  });
+</script>
+{% endblock %}

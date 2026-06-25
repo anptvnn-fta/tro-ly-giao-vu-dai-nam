@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Hàng đợi duyệt — Giáo vụ Đại Nam{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>&#9989; Hàng đợi duyệt (HITL)</h1>
+  <p>Trưởng phòng Đào tạo phê duyệt hoặc từ chối các yêu cầu ngoài phạm vi từ agent.</p>
+</div>
+
+{% if session.get('vai_tro') != 'truong_phong_dao_tao' %}
+<div class="card" style="border-color:rgba(245,166,35,.4);margin-bottom:24px;">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span style="font-size:1.5rem;">&#128274;</span>
+    <div>
+      <div class="card-title" style="color:var(--warning);margin-bottom:4px;">Quyền hạn chế</div>
+      <p style="font-size:.85rem;color:var(--text-secondary);">
+        Trang này chỉ dành cho <strong>Trưởng phòng Đào tạo</strong>.
+        Vui lòng chuyển vai trò ở thanh điều hướng để phê duyệt yêu cầu.
+      </p>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Danh sách chờ duyệt từ nhật ký -->
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-title">Yêu cầu đang chờ duyệt</div>
+  {% if cho_duyet %}
+  <div style="overflow-x:auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Thời gian</th>
+          <th>Cán bộ</th>
+          <th>Mã SV</th>
+          <th>Tóm tắt yêu cầu</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in cho_duyet %}
+        <tr>
+          <td style="white-space:nowrap;font-size:.8rem;">{{ row.get('thoi_gian', '') }}</td>
+          <td>{{ row.get('can_bo', '') }}</td>
+          <td><code style="font-size:.82rem;">{{ row.get('ma_sv', '') }}</code></td>
+          <td>{{ row.get('ket_qua_tom_tat', '') }}</td>
+          <td>
+            <div style="display:flex;gap:8px;">
+              <form method="POST" action="/hang-doi" style="display:inline;">
+                <input type="hidden" name="hanh_dong" value="duyet">
+                <input type="hidden" name="noi_dung"
+                       value="Duyệt yêu cầu của {{ row.get('can_bo','') }} lúc {{ row.get('thoi_gian','') }}">
+                <button type="submit" class="btn btn-success"
+                        style="padding:6px 14px;font-size:.78rem;"
+                        {% if session.get('vai_tro') != 'truong_phong_dao_tao' %}disabled{% endif %}>
+                  Duyệt
+                </button>
+              </form>
+              <form method="POST" action="/hang-doi" style="display:inline;">
+                <input type="hidden" name="hanh_dong" value="tu_choi">
+                <input type="hidden" name="noi_dung"
+                       value="Từ chối yêu cầu của {{ row.get('can_bo','') }} lúc {{ row.get('thoi_gian','') }}">
+                <button type="submit" class="btn btn-danger"
+                        style="padding:6px 14px;font-size:.78rem;"
+                        {% if session.get('vai_tro') != 'truong_phong_dao_tao' %}disabled{% endif %}>
+                  Từ chối
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state" style="padding:40px 20px;">
+    <div class="icon">&#9989;</div>
+    <p>Không có yêu cầu nào đang chờ duyệt.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Form phê duyệt thủ công -->
+<div class="card" style="max-width:600px;">
+  <div class="card-title">Phê duyệt / Từ chối thủ công</div>
+  {% if error %}
+  <div class="flash-item danger" style="margin-bottom:16px;">{{ error }}</div>
+  {% endif %}
+  {% if ket_qua_duyet %}
+  <div class="card" style="margin-bottom:16px;border-color:rgba(52,211,153,.3);">
+    <div class="card-title" style="color:var(--success);">Kết quả xử lý</div>
+    <div class="agent-response">{{ ket_qua_duyet }}</div>
+  </div>
+  {% endif %}
+  <form method="POST" action="/hang-doi">
+    <div class="form-group">
+      <label for="noi_dung">Nội dung yêu cầu / ghi chú phê duyệt</label>
+      <textarea
+        name="noi_dung"
+        id="noi_dung"
+        class="form-textarea"
+        rows="4"
+        placeholder="Nhập nội dung yêu cầu cần phê duyệt hoặc ghi chú từ chối...">{{ noi_dung }}</textarea>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <button type="submit" name="hanh_dong" value="duyet"
+              class="btn btn-success"
+              {% if session.get('vai_tro') != 'truong_phong_dao_tao' %}disabled{% endif %}>
+        &#10003; Phê duyệt
+      </button>
+      <button type="submit" name="hanh_dong" value="tu_choi"
+              class="btn btn-danger"
+              {% if session.get('vai_tro') != 'truong_phong_dao_tao' %}disabled{% endif %}>
+        &#10007; Từ chối
+      </button>
+    </div>
+  </form>
+</div>
+
+<div class="concept-note">
+  <span class="cn-icon">&#128218;</span>
+  <span>
+    <strong>Day 1 — Human-in-the-Loop (HITL) Pattern + Day 4 — Phân quyền:</strong>
+    Khi agent phân loại yêu cầu là <code>ngoai_pham_vi</code>, node <code>escalate</code> đưa vào
+    hàng đợi HITL. Trang này là giao diện duyệt thủ công dành cho <em>Trưởng phòng Đào tạo</em>.
+    Nút Duyệt/Từ chối bị vô hiệu hoá nếu vai trò không đủ quyền — minh hoạ
+    <em>defense-in-depth</em> (Day 4): kiểm tra phân quyền ở cả tầng UI lẫn tầng tool callback.
+  </span>
+</div>
+{% endblock %}

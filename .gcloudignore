@@ -1,0 +1,21 @@
+# Loại trừ khi upload source lên Cloud Build (gcloud run deploy --source .)
+# Quan trọng nhất: KHÔNG upload .venv (rất nặng).
+.venv/
+**/__pycache__/
+*.pyc
+.git/
+.gitignore
+.env
+.env.*
+.ruff_cache/
+.pytest_cache/
+uv.lock
+
+# Không cần cho runtime container
+tests/
+artifacts/
+*.md
+VIDEO_SCRIPT.md
+ANTIGRAVITY_PROMPTS.md
+KE_HOACH.md
+WRITEUP.md

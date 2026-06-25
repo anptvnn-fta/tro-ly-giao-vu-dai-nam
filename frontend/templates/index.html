@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Trang chủ — Trợ lý Giáo vụ Đại Nam{% endblock %}
+
+{% block content %}
+<div class="page-header" style="text-align:center;">
+  <h1>Trợ lý Giáo vụ số</h1>
+  <p>Đại học Đại Nam — Hệ thống hỗ trợ cán bộ giáo vụ nội bộ</p>
+</div>
+
+<!-- Chọn vai trò -->
+<div class="card" style="max-width:480px;margin:0 auto 32px;">
+  <div class="card-title">Chọn vai trò để bắt đầu</div>
+  <form method="POST" action="/">
+    <div class="form-group">
+      <label for="vai_tro">Vai trò của bạn</label>
+      <select name="vai_tro" id="vai_tro" class="form-select" required>
+        <option value="" disabled selected>-- Chọn vai trò --</option>
+        {% for key, label in vai_tro_labels.items() %}
+        <option value="{{ key }}" {% if current_vai_tro == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+      Bắt đầu sử dụng
+    </button>
+  </form>
+</div>
+
+<!-- Giới thiệu chức năng -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:960px;margin:0 auto;">
+
+  <a href="/tra-cuu" class="card" style="text-decoration:none;cursor:pointer;">
+    <div style="font-size:2rem;margin-bottom:12px;">&#128269;</div>
+    <div class="card-title">Tra cứu quy chế</div>
+    <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.6;">
+      Tra cứu quy định đào tạo, học phí, cảnh báo học vụ có trích dẫn điều khoản chính xác.
+    </p>
+  </a>
+
+  <a href="/lo-trinh" class="card" style="text-decoration:none;cursor:pointer;">
+    <div style="font-size:2rem;margin-bottom:12px;">&#128203;</div>
+    <div class="card-title">Lộ trình học lại</div>
+    <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.6;">
+      Tự động lập kế hoạch học lại / trả nợ học phần, kiểm tra tiên quyết và xung đột lịch.
+    </p>
+  </a>
+
+  <a href="/lich-diem" class="card" style="text-decoration:none;cursor:pointer;">
+    <div style="font-size:2rem;margin-bottom:12px;">&#128197;</div>
+    <div class="card-title">Lịch &amp; Điểm</div>
+    <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.6;">
+      Tra cứu lịch học và bảng điểm sinh viên theo mã số.
+    </p>
+  </a>
+
+  <a href="/hang-doi" class="card" style="text-decoration:none;cursor:pointer;">
+    <div style="font-size:2rem;margin-bottom:12px;">&#9989;</div>
+    <div class="card-title">Hàng đợi duyệt</div>
+    <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.6;">
+      Trưởng phòng Đào tạo phê duyệt / từ chối yêu cầu ngoài phạm vi (HITL).
+    </p>
+  </a>
+
+  <a href="/bao-cao" class="card" style="text-decoration:none;cursor:pointer;">
+    <div style="font-size:2rem;margin-bottom:12px;">&#128202;</div>
+    <div class="card-title">Báo cáo xử lý yêu cầu</div>
+    <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.6;">
+      Tổng hợp nhật ký yêu cầu, thống kê theo loại, cán bộ, vai trò.
+    </p>
+  </a>
+
+</div>
+
+<div class="concept-note" style="max-width:960px;margin:32px auto 0;">
+  <span class="cn-icon">&#128218;</span>
+  <span>
+    <strong>Day 5 — FastAPI + Flask Web Frontend:</strong>
+    Trang chủ cung cấp phân quyền (role selector) qua Flask session.
+    Vai trò được truyền vào session state của ADK agent tại mỗi lượt gọi.
+    Minh hoạ khái niệm <em>stateless container + externalized state</em> và
+    <em>human-in-the-loop dashboard</em> trong kiến trúc Day 5.
+  </span>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+ma_sv,ho_ten,nganh,ma_mon,ten_mon,tin_chi,diem_chu,diem_so,ky,trang_thai
+1771020001,Nguyễn Văn A,CNTT,CNTT001,Nhập môn Lập trình,3,C,2.0,HK1-2021,dat
+1771020001,Nguyễn Văn A,CNTT,CNTT002,Toán Rời rạc,3,F,0.0,HK1-2021,truot
+1771020001,Nguyễn Văn A,CNTT,CNTT003,Lập trình Hướng đối tượng,3,D,1.0,HK2-2021,dat
+1771020001,Nguyễn Văn A,CNTT,CNTT002,Toán Rời rạc,3,D,1.0,HK2-2021,dat
+1771020001,Nguyễn Văn A,CNTT,CNTT004,Cấu trúc Dữ liệu và Giải thuật,4,F,0.0,HK2-2021,truot
+1771020001,Nguyễn Văn A,CNTT,CNTT005,Cơ sở Dữ liệu,3,C+,2.5,HK1-2022,dat
+1771020001,Nguyễn Văn A,CNTT,CNTT006,Hệ điều hành,3,F,0.0,HK1-2022,truot
+1771020001,Nguyễn Văn A,CNTT,CNTT004,Cấu trúc Dữ liệu và Giải thuật,4,F,0.0,HK1-2022,truot
+1771020001,Nguyễn Văn A,CNTT,CNTT007,Mạng Máy tính,3,,,, no
+1771020001,Nguyễn Văn A,CNTT,CNTT008,Phát triển Ứng dụng Web,4,F,0.0,HK2-2022,truot
+1771020001,Nguyễn Văn A,CNTT,CNTT006,Hệ điều hành,3,D+,1.5,HK2-2022,dat
+1771020001,Nguyễn Văn A,CNTT,CNTT009,Kỹ nghệ Phần mềm,3,,,, no
+1771020001,Nguyễn Văn A,CNTT,CNTT010,Trí tuệ Nhân tạo,3,,,, no
+1771020001,Nguyễn Văn A,CNTT,CNTT011,Học máy và Khai thác Dữ liệu,3,,,, no
+1771020001,Nguyễn Văn A,CNTT,CNTT012,An toàn và Bảo mật Thông tin,3,,,, no
+1771020002,Trần Thị B,CNTT,CNTT001,Nhập môn Lập trình,3,A,4.0,HK1-2021,dat
+1771020002,Trần Thị B,CNTT,CNTT002,Toán Rời rạc,3,B+,3.5,HK1-2021,dat
+1771020002,Trần Thị B,CNTT,CNTT003,Lập trình Hướng đối tượng,3,A,4.0,HK2-2021,dat
+1771020002,Trần Thị B,CNTT,CNTT004,Cấu trúc Dữ liệu và Giải thuật,4,B,3.0,HK2-2021,dat
+1771020002,Trần Thị B,CNTT,CNTT005,Cơ sở Dữ liệu,3,B+,3.5,HK1-2022,dat
+1771020002,Trần Thị B,CNTT,CNTT006,Hệ điều hành,3,B,3.0,HK1-2022,dat
+1771020002,Trần Thị B,CNTT,CNTT007,Mạng Máy tính,3,B+,3.5,HK2-2022,dat
+1771020002,Trần Thị B,CNTT,CNTT008,Phát triển Ứng dụng Web,4,A,4.0,HK2-2022,dat
+1771020002,Trần Thị B,CNTT,CNTT009,Kỹ nghệ Phần mềm,3,B,3.0,HK1-2023,dat
+1771020002,Trần Thị B,CNTT,CNTT010,Trí tuệ Nhân tạo,3,B+,3.5,HK1-2023,dat
+1771020002,Trần Thị B,CNTT,CNTT011,Học máy và Khai thác Dữ liệu,3,B,3.0,HK2-2023,dat
+1771020002,Trần Thị B,CNTT,CNTT012,An toàn và Bảo mật Thông tin,3,B+,3.5,HK2-2023,dat
+1771020002,Trần Thị B,CNTT,CNTT013,Điện toán Đám mây và DevOps,3,A,4.0,HK1-2024,dat
+1771020002,Trần Thị B,CNTT,CNTT015,Thực tập Doanh nghiệp,3,B+,3.5,HK1-2024,dat
+1771020002,Trần Thị B,CNTT,CNTT016,Lập trình Di động,3,B,3.0,HK2-2023,dat
